@@ -22,43 +22,43 @@ public class MenuItemService {
                 .collect(Collectors.toList());
     }
     
-    public List<MenuItemDto> getMenuItemsByCategory(Long restaurantId, Long categoryId) {
+    public List<MenuItemDto> getMenuItemsByRestaurantAndCategory(Long restaurantId, Long categoryId) {
         return menuItemRepository.findByRestaurantIdAndCategoryIdAndIsAvailableTrue(restaurantId, categoryId)
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
     
-    public List<MenuItemDto> searchMenuItems(Long restaurantId, String searchTerm) {
-        return menuItemRepository.searchMenuItems(restaurantId, searchTerm)
+    public List<MenuItemDto> searchMenuItems(Long restaurantId, String query) {
+        return menuItemRepository.searchByRestaurantIdAndName(restaurantId, query)
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
     
-    public List<MenuItemDto> getVegetarianItems(Long restaurantId) {
+    public List<MenuItemDto> getVegetarianMenuItems(Long restaurantId) {
         return menuItemRepository.findByRestaurantIdAndIsVegetarianTrueAndIsAvailableTrue(restaurantId)
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
     
-    public List<MenuItemDto> getSpicyItems(Long restaurantId) {
+    public List<MenuItemDto> getSpicyMenuItems(Long restaurantId) {
         return menuItemRepository.findByRestaurantIdAndIsSpicyTrueAndIsAvailableTrue(restaurantId)
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
     
-    public List<MenuItemDto> getItemsByPriceRange(Long restaurantId, Double minPrice, Double maxPrice) {
-        return menuItemRepository.findByPriceRange(restaurantId, minPrice, maxPrice)
+    public List<MenuItemDto> getMenuItemsByPriceRange(Long restaurantId, double minPrice, double maxPrice) {
+        return menuItemRepository.findByRestaurantIdAndPriceRange(restaurantId, minPrice, maxPrice)
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
     
     public MenuItemDto getMenuItemById(Long id) {
-        MenuItem menuItem = menuItemRepository.findByIdAndIsAvailableTrue(id)
+        MenuItem menuItem = menuItemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Menu item not found"));
         return convertToDto(menuItem);
     }
@@ -70,9 +70,9 @@ public class MenuItemService {
         dto.setDescription(menuItem.getDescription());
         dto.setPrice(menuItem.getPrice());
         dto.setImageUrl(menuItem.getImageUrl());
-        dto.setIsVegetarian(menuItem.getIsVegetarian());
-        dto.setIsSpicy(menuItem.getIsSpicy());
-        dto.setIsAvailable(menuItem.getIsAvailable());
+        dto.setVegetarian(menuItem.isVegetarian());
+        dto.setSpicy(menuItem.isSpicy());
+        dto.setAvailable(menuItem.isAvailable());
         dto.setPreparationTime(menuItem.getPreparationTime());
         dto.setCreatedAt(menuItem.getCreatedAt());
         dto.setUpdatedAt(menuItem.getUpdatedAt());

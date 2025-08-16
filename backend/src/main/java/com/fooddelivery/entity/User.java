@@ -23,29 +23,31 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(nullable = false, unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
     
     @Column(nullable = false)
     private String password;
     
-    @Column(nullable = false)
+    @Column(name = "first_name", nullable = false)
     private String firstName;
     
-    @Column(nullable = false)
+    @Column(name = "last_name", nullable = false)
     private String lastName;
     
-    @Column(nullable = false, unique = true)
+    @Column(unique = true, nullable = false)
     private String phone;
     
     @Column(nullable = false)
     private String address;
     
     @Enumerated(EnumType.STRING)
-    private Role role = Role.USER;
+    private UserRole role = UserRole.USER;
     
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
     
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     
     private boolean enabled = true;
@@ -91,7 +93,7 @@ public class User implements UserDetails {
         return enabled;
     }
     
-    public enum Role {
+    public enum UserRole {
         USER, ADMIN, RESTAURANT_OWNER
     }
 }

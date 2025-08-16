@@ -7,7 +7,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
@@ -16,18 +15,25 @@ public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
     
     List<MenuItem> findByRestaurantIdAndCategoryIdAndIsAvailableTrue(Long restaurantId, Long categoryId);
     
-    @Query("SELECT mi FROM MenuItem mi WHERE mi.restaurant.id = :restaurantId AND mi.name LIKE %:searchTerm% AND mi.isAvailable = true")
-    List<MenuItem> searchMenuItems(@Param("restaurantId") Long restaurantId, @Param("searchTerm") String searchTerm);
+    @Query("SELECT mi FROM MenuItem mi WHERE mi.restaurant.id = :restaurantId AND " +
+           "LOWER(mi.name) LIKE LOWER(CONCAT('%', :query, '%')) AND mi.isAvailable = true")
+    List<MenuItem> searchByRestaurantIdAndName(@Param("restaurantId") Long restaurantId, 
+                                              @Param("query") String query);
     
     List<MenuItem> findByRestaurantIdAndIsVegetarianTrueAndIsAvailableTrue(Long restaurantId);
     
     List<MenuItem> findByRestaurantIdAndIsSpicyTrueAndIsAvailableTrue(Long restaurantId);
     
-    @Query("SELECT mi FROM MenuItem mi WHERE mi.restaurant.id = :restaurantId AND mi.price BETWEEN :minPrice AND :maxPrice AND mi.isAvailable = true")
-    List<MenuItem> findByPriceRange(@Param("restaurantId") Long restaurantId, @Param("minPrice") Double minPrice, @Param("maxPrice") Double maxPrice);
+    @Query("SELECT mi FROM MenuItem mi WHERE mi.restaurant.id = :restaurantId AND " +
+           "mi.price BETWEEN :minPrice AND :maxPrice AND mi.isAvailable = true")
+    List<MenuItem> findByRestaurantIdAndPriceRange(@Param("restaurantId") Long restaurantId,
+                                                  @Param("minPrice") double minPrice,
+                                                  @Param("maxPrice") double maxPrice);
     
-    Optional<MenuItem> findByIdAndIsAvailableTrue(Long id);
+    List<MenuItem> findByRestaurantIdAndIsAvailableTrueOrderByNameAsc(Long restaurantId);
     
-    @Query("SELECT mi FROM MenuItem mi WHERE mi.restaurant.id = :restaurantId AND mi.category.id = :categoryId AND mi.isAvailable = true ORDER BY mi.name ASC")
-    List<MenuItem> findByRestaurantAndCategoryOrderByName(@Param("restaurantId") Long restaurantId, @Param("categoryId") Long categoryId);
+    @Query("SELECT mi FROM MenuItem mi WHERE mi.restaurant.id = :restaurantId AND " +
+           "mi.category.id = :categoryId AND mi.isAvailable = true ORDER BY mi.name")
+    List<MenuItem> findByRestaurantIdAndCategoryIdOrderByName(@Param("restaurantId") Long restaurantId,
+                                                             @Param("categoryId") Long categoryId);
 }

@@ -22,11 +22,15 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     List<Payment> findByStatus(Payment.PaymentStatus status);
     
     @Query("SELECT p FROM Payment p WHERE p.paymentTime BETWEEN :startDate AND :endDate")
-    List<Payment> findByPaymentTimeBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    List<Payment> findByPaymentTimeBetween(@Param("startDate") LocalDateTime startDate,
+                                         @Param("endDate") LocalDateTime endDate);
     
     @Query("SELECT p FROM Payment p WHERE p.status = :status AND p.paymentTime BETWEEN :startDate AND :endDate")
-    List<Payment> findByStatusAndPaymentTimeBetween(@Param("status") Payment.PaymentStatus status, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    List<Payment> findByStatusAndPaymentTimeBetween(@Param("status") Payment.PaymentStatus status,
+                                                  @Param("startDate") LocalDateTime startDate,
+                                                  @Param("endDate") LocalDateTime endDate);
     
     @Query("SELECT COUNT(p) FROM Payment p WHERE p.status = 'COMPLETED' AND p.paymentTime BETWEEN :startDate AND :endDate")
-    Long countSuccessfulPaymentsBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    long countSuccessfulPaymentsInDateRange(@Param("startDate") LocalDateTime startDate,
+                                          @Param("endDate") LocalDateTime endDate);
 }

@@ -4,12 +4,13 @@ import { useNavigate, Link } from 'react-router-dom';
 import {
   Container,
   Paper,
+  Typography,
   TextField,
   Button,
-  Typography,
   Box,
   Alert,
   CircularProgress,
+  Link as MuiLink,
   Grid,
 } from '@mui/material';
 import { register, clearError } from '../store/slices/authSlice';
@@ -18,7 +19,7 @@ const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error, isAuthenticated } = useSelector((state) => state.auth);
-
+  
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -28,17 +29,20 @@ const Register = () => {
     phone: '',
     address: '',
   });
-
+  
   const [validationErrors, setValidationErrors] = useState({});
 
   useEffect(() => {
     if (isAuthenticated) {
       navigate('/');
     }
+  }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
     return () => {
       dispatch(clearError());
     };
-  }, [isAuthenticated, navigate, dispatch]);
+  }, [dispatch]);
 
   const validateForm = () => {
     const errors = {};
@@ -69,12 +73,16 @@ const Register = () => {
       errors.confirmPassword = 'Passwords do not match';
     }
     
-    if (!formData.phone.trim()) {
+    if (!formData.phone) {
       errors.phone = 'Phone number is required';
+    } else if (!/^\d{10}$/.test(formData.phone)) {
+      errors.phone = 'Phone number must be 10 digits';
     }
     
     if (!formData.address.trim()) {
       errors.address = 'Address is required';
+    } else if (formData.address.length < 10) {
+      errors.address = 'Address must be at least 10 characters';
     }
     
     setValidationErrors(errors);
@@ -85,160 +93,176 @@ const Register = () => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value,
+      [name]: value
     }));
+    
     // Clear validation error when user starts typing
     if (validationErrors[name]) {
       setValidationErrors(prev => ({
         ...prev,
-        [name]: '',
+        [name]: ''
       }));
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
     if (validateForm()) {
-      const { confirmPassword, ...registerData } = formData;
-      dispatch(register(registerData));
+      const { confirmPassword, ...registrationData } = formData;
+      dispatch(register(registrationData));
     }
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 4 }}>
+    <Container maxWidth="md" sx={{ py: 4 }}>
       <Paper elevation={3} sx={{ p: 4 }}>
         <Typography variant="h4" component="h1" align="center" gutterBottom>
-          Register
+          Create Account
         </Typography>
         
+        <Typography variant="body1" color="text.secondary" align="center" sx={{ mb: 4 }}>
+          Join us and start ordering delicious food!
+        </Typography>
+
         {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
+          <Alert severity="error" sx={{ mb: 3 }}>
             {error}
           </Alert>
         )}
-        
-        <Box component="form" onSubmit={handleSubmit} noValidate>
+
+        <Box component="form" onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
-                required
                 fullWidth
-                id="firstName"
                 label="First Name"
                 name="firstName"
-                autoComplete="given-name"
                 value={formData.firstName}
                 onChange={handleChange}
                 error={!!validationErrors.firstName}
                 helperText={validationErrors.firstName}
+                margin="normal"
+                required
+                autoComplete="given-name"
               />
             </Grid>
+            
             <Grid item xs={12} sm={6}>
               <TextField
-                required
                 fullWidth
-                id="lastName"
                 label="Last Name"
                 name="lastName"
-                autoComplete="family-name"
                 value={formData.lastName}
                 onChange={handleChange}
                 error={!!validationErrors.lastName}
                 helperText={validationErrors.lastName}
+                margin="normal"
+                required
+                autoComplete="family-name"
+              />
+            </Grid>
+            
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                error={!!validationErrors.email}
+                helperText={validationErrors.email}
+                margin="normal"
+                required
+                autoComplete="email"
+              />
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Password"
+                name="password"
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+                error={!!validationErrors.password}
+                helperText={validationErrors.password}
+                margin="normal"
+                required
+                autoComplete="new-password"
+              />
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Confirm Password"
+                name="confirmPassword"
+                type="password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                error={!!validationErrors.confirmPassword}
+                helperText={validationErrors.confirmPassword}
+                margin="normal"
+                required
+                autoComplete="new-password"
+              />
+            </Grid>
+            
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Phone Number"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                error={!!validationErrors.phone}
+                helperText={validationErrors.phone}
+                margin="normal"
+                required
+                autoComplete="tel"
+                placeholder="1234567890"
+              />
+            </Grid>
+            
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Address"
+                name="address"
+                multiline
+                rows={3}
+                value={formData.address}
+                onChange={handleChange}
+                error={!!validationErrors.address}
+                helperText={validationErrors.address}
+                margin="normal"
+                required
+                autoComplete="street-address"
+                placeholder="Enter your full delivery address"
               />
             </Grid>
           </Grid>
-          
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            value={formData.email}
-            onChange={handleChange}
-            error={!!validationErrors.email}
-            helperText={validationErrors.email}
-          />
-          
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="new-password"
-            value={formData.password}
-            onChange={handleChange}
-            error={!!validationErrors.password}
-            helperText={validationErrors.password}
-          />
-          
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="confirmPassword"
-            label="Confirm Password"
-            type="password"
-            id="confirmPassword"
-            autoComplete="new-password"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            error={!!validationErrors.confirmPassword}
-            helperText={validationErrors.confirmPassword}
-          />
-          
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="phone"
-            label="Phone Number"
-            id="phone"
-            autoComplete="tel"
-            value={formData.phone}
-            onChange={handleChange}
-            error={!!validationErrors.phone}
-            helperText={validationErrors.phone}
-          />
-          
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="address"
-            label="Address"
-            id="address"
-            autoComplete="street-address"
-            multiline
-            rows={3}
-            value={formData.address}
-            onChange={handleChange}
-            error={!!validationErrors.address}
-            helperText={validationErrors.address}
-          />
           
           <Button
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            size="large"
             disabled={loading}
+            sx={{ mt: 3, mb: 2 }}
           >
-            {loading ? <CircularProgress size={24} /> : 'Register'}
+            {loading ? <CircularProgress size={24} /> : 'Create Account'}
           </Button>
           
           <Box sx={{ textAlign: 'center' }}>
-            <Typography variant="body2">
+            <Typography variant="body2" color="text.secondary">
               Already have an account?{' '}
-              <Link to="/login" style={{ textDecoration: 'none' }}>
+              <MuiLink component={Link} to="/login" variant="body2">
                 Sign in here
-              </Link>
+              </MuiLink>
             </Typography>
           </Box>
         </Box>

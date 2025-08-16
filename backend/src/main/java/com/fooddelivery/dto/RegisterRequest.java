@@ -1,9 +1,6 @@
 package com.fooddelivery.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,7 +23,7 @@ public class RegisterRequest {
     private String email;
     
     @NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must be at least 6 characters long")
+    @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
     
     @NotBlank(message = "Phone number is required")
@@ -34,5 +31,6 @@ public class RegisterRequest {
     private String phone;
     
     @NotBlank(message = "Address is required")
+    @Size(min = 10, max = 200, message = "Address must be between 10 and 200 characters")
     private String address;
 }

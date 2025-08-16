@@ -1,83 +1,105 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams, useNavigate } from 'react-router-dom';
 import {
   Container,
+  Typography,
   Grid,
   Card,
   CardContent,
   CardMedia,
-  Typography,
+  CardActions,
   Button,
-  Rating,
-  Chip,
   Box,
+  Chip,
+  Rating,
   CircularProgress,
   Alert,
-  IconButton,
+  Tabs,
+  Tab,
   TextField,
+  InputAdornment,
 } from '@mui/material';
-import { Add, Remove, LocalShipping, AccessTime, Star } from '@mui/icons-material';
-import { fetchRestaurantById, fetchMenuItems } from '../store/slices/restaurantSlice';
-import { addToCart } from '../store/slices/cartSlice';
+import {
+  Search as SearchIcon,
+  AccessTime as TimeIcon,
+  LocalShipping as DeliveryIcon,
+  Add as AddIcon,
+  Remove as RemoveIcon,
+} from '@mui/icons-material';
+import { fetchRestaurantById } from '../store/slices/restaurantSlice';
+import { addToCart, updateQuantity } from '../store/slices/cartSlice';
+import axios from 'axios';
 
 const RestaurantDetail = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { id } = useParams();
-  const { isAuthenticated } = useSelector((state) => state.auth);
-  const { currentRestaurant, menuItems, loading, error } = useSelector((state) => state.restaurant);
+  const dispatch = useDispatch();
+  const { currentRestaurant, loading, error } = useSelector((state) => state.restaurant);
+  const { items } = useSelector((state) => state.cart);
   
-  const [quantities, setQuantities] = useState({});
+  const [menuItems, setMenuItems] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [menuLoading, setMenuLoading] = useState(false);
 
   useEffect(() => {
     dispatch(fetchRestaurantById(id));
-    dispatch(fetchMenuItems(id));
   }, [dispatch, id]);
 
-  const handleAddToCart = (item) => {
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
+  useEffect(() => {
+    if (currentRestaurant) {
+      fetchMenuItems();
+      fetchCategories();
     }
-    
+  }, [currentRestaurant]);
+
+  const fetchMenuItems = async () => {
+    setMenuLoading(true);
+    try {
+      const response = await axios.get(`http://localhost:8080/api/menu-items/restaurant/${id}`);
+      setMenuItems(response.data);
+    } catch (error) {
+      console.error('Failed to fetch menu items:', error);
+    } finally {
+      setMenuLoading(false);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/categories');
+      setCategories(response.data);
+    } catch (error) {
+      console.error('Failed to fetch categories:', error);
+    }
+  };
+
+  const handleAddToCart = (item) => {
     dispatch(addToCart({
       item,
       restaurantId: currentRestaurant.id,
-      restaurantName: currentRestaurant.name,
     }));
   };
 
-  const handleQuantityChange = (itemId, change) => {
-    const currentQty = quantities[itemId] || 0;
-    const newQty = Math.max(0, currentQty + change);
-    
-    if (newQty === 0) {
-      const newQuantities = { ...quantities };
-      delete newQuantities[itemId];
-      setQuantities(newQuantities);
-    } else {
-      setQuantities(prev => ({
-        ...prev,
-        [itemId]: newQty,
-      }));
+  const handleQuantityChange = (itemId, newQuantity) => {
+    if (newQuantity >= 0) {
+      dispatch(updateQuantity({ itemId, quantity: newQuantity }));
     }
   };
 
-  const handleAddMultipleToCart = (item) => {
-    const quantity = quantities[item.id] || 1;
-    for (let i = 0; i < quantity; i++) {
-      dispatch(addToCart({
-        item,
-        restaurantId: currentRestaurant.id,
-        restaurantName: currentRestaurant.name,
-      }));
-    }
-    // Clear quantity after adding
-    const newQuantities = { ...quantities };
-    delete newQuantities[item.id];
-    setQuantities(newQuantities);
+  const getCartItemQuantity = (itemId) => {
+    const cartItem = items.find(item => item.id === itemId);
+    return cartItem ? cartItem.quantity : 0;
   };
+
+  const filteredMenuItems = menuItems.filter(item => {
+    const matchesCategory = selectedCategory === 'all' || 
+      (item.categoryName && item.categoryName.toLowerCase() === selectedCategory.toLowerCase());
+    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   if (loading) {
     return (
@@ -96,15 +118,11 @@ const RestaurantDetail = () => {
   }
 
   if (!currentRestaurant) {
-    return (
-      <Container sx={{ mt: 4 }}>
-        <Alert severity="info">Restaurant not found</Alert>
-      </Container>
-    );
+    return null;
   }
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4 }}>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* Restaurant Header */}
       <Card sx={{ mb: 4 }}>
         <CardMedia
@@ -118,36 +136,33 @@ const RestaurantDetail = () => {
             {currentRestaurant.name}
           </Typography>
           
-          <Typography variant="body1" color="text.secondary" paragraph>
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
             {currentRestaurant.description}
           </Typography>
-          
+
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <Rating 
-              value={currentRestaurant.rating} 
-              readOnly 
-              icon={<Star />}
-            />
+            <Rating value={currentRestaurant.rating} precision={0.5} readOnly />
             <Typography variant="body2" sx={{ ml: 1 }}>
               ({currentRestaurant.reviewCount} reviews)
             </Typography>
           </Box>
-          
+
           <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <AccessTime sx={{ mr: 0.5 }} />
-              <Typography variant="body2">
+              <TimeIcon sx={{ fontSize: 16, mr: 0.5, color: 'text.secondary' }} />
+              <Typography variant="body2" color="text.secondary">
                 {currentRestaurant.deliveryTime} min delivery
               </Typography>
             </Box>
+            
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <LocalShipping sx={{ mr: 0.5 }} />
-              <Typography variant="body2">
+              <DeliveryIcon sx={{ fontSize: 16, mr: 0.5, color: 'text.secondary' }} />
+              <Typography variant="body2" color="text.secondary">
                 ${currentRestaurant.deliveryFee} delivery fee
               </Typography>
             </Box>
           </Box>
-          
+
           <Chip 
             label={currentRestaurant.cuisine} 
             color="primary" 
@@ -156,102 +171,127 @@ const RestaurantDetail = () => {
         </CardContent>
       </Card>
 
+      {/* Search and Filter */}
+      <Box sx={{ mb: 3 }}>
+        <TextField
+          fullWidth
+          variant="outlined"
+          placeholder="Search menu items..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+          sx={{ mb: 2 }}
+        />
+
+        <Tabs
+          value={selectedCategory}
+          onChange={(e, newValue) => setSelectedCategory(newValue)}
+          variant="scrollable"
+          scrollButtons="auto"
+        >
+          <Tab label="All" value="all" />
+          {categories.map((category) => (
+            <Tab key={category.id} label={category.name} value={category.name} />
+          ))}
+        </Tabs>
+      </Box>
+
       {/* Menu Items */}
-      <Typography variant="h5" component="h2" gutterBottom>
-        Menu
-      </Typography>
-      
-      <Grid container spacing={3}>
-        {menuItems.map((item) => (
-          <Grid item xs={12} sm={6} md={4} key={item.id}>
-            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-              <CardMedia
-                component="img"
-                height="200"
-                image={item.imageUrl || 'https://via.placeholder.com/400x200?text=Food'}
-                alt={item.name}
-              />
-              <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                <Typography variant="h6" component="h3" gutterBottom>
-                  {item.name}
-                </Typography>
-                
-                <Typography variant="body2" color="text.secondary" paragraph sx={{ flexGrow: 1 }}>
-                  {item.description}
-                </Typography>
-                
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <Typography variant="h6" color="primary" sx={{ mr: 1 }}>
-                    ${item.price}
-                  </Typography>
-                  {item.isVegetarian && (
-                    <Chip label="Vegetarian" size="small" color="success" sx={{ mr: 0.5 }} />
-                  )}
-                  {item.isSpicy && (
-                    <Chip label="Spicy" size="small" color="error" />
-                  )}
-                </Box>
-                
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <IconButton 
-                      size="small" 
-                      onClick={() => handleQuantityChange(item.id, -1)}
-                    >
-                      <Remove />
-                    </IconButton>
-                    <TextField
-                      size="small"
-                      value={quantities[item.id] || 0}
-                      onChange={(e) => {
-                        const value = parseInt(e.target.value) || 0;
-                        if (value === 0) {
-                          const newQuantities = { ...quantities };
-                          delete newQuantities[item.id];
-                          setQuantities(newQuantities);
-                        } else {
-                          setQuantities(prev => ({
-                            ...prev,
-                            [item.id]: value,
-                          }));
-                        }
-                      }}
-                      sx={{ width: 60, mx: 1 }}
-                      inputProps={{ min: 0, style: { textAlign: 'center' } }}
-                    />
-                    <IconButton 
-                      size="small" 
-                      onClick={() => handleQuantityChange(item.id, 1)}
-                    >
-                      <Add />
-                    </IconButton>
-                  </Box>
+      {menuLoading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <Grid container spacing={3}>
+          {filteredMenuItems.map((item) => {
+            const cartQuantity = getCartItemQuantity(item.id);
+            
+            return (
+              <Grid item xs={12} sm={6} md={4} key={item.id}>
+                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <CardMedia
+                    component="img"
+                    height="200"
+                    image={item.imageUrl || 'https://via.placeholder.com/400x200?text=Food'}
+                    alt={item.name}
+                  />
+                  <CardContent sx={{ flexGrow: 1 }}>
+                    <Typography variant="h6" component="h2" gutterBottom>
+                      {item.name}
+                    </Typography>
+                    
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                      {item.description}
+                    </Typography>
+
+                    <Typography variant="h6" color="primary" sx={{ mb: 2 }}>
+                      ${item.price}
+                    </Typography>
+
+                    <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                      {item.isVegetarian && (
+                        <Chip label="Vegetarian" size="small" color="success" variant="outlined" />
+                      )}
+                      {item.isSpicy && (
+                        <Chip label="Spicy" size="small" color="error" variant="outlined" />
+                      )}
+                    </Box>
+                  </CardContent>
                   
-                  <Button
-                    variant="contained"
-                    size="small"
-                    startIcon={<Add />}
-                    onClick={() => {
-                      if (quantities[item.id] && quantities[item.id] > 0) {
-                        handleAddMultipleToCart(item);
-                      } else {
-                        handleAddToCart(item);
-                      }
-                    }}
-                  >
-                    Add
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-      
-      {menuItems.length === 0 && !loading && (
+                  <CardActions>
+                    {cartQuantity === 0 ? (
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={() => handleAddToCart(item)}
+                      >
+                        Add to Cart
+                      </Button>
+                    ) : (
+                      <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 1 }}>
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          onClick={() => handleQuantityChange(item.id, cartQuantity - 1)}
+                        >
+                          <RemoveIcon />
+                        </Button>
+                        
+                        <Typography variant="body1" sx={{ flex: 1, textAlign: 'center' }}>
+                          {cartQuantity}
+                        </Typography>
+                        
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          onClick={() => handleQuantityChange(item.id, cartQuantity + 1)}
+                        >
+                          <AddIcon />
+                        </Button>
+                      </Box>
+                    )}
+                  </CardActions>
+                </Card>
+              </Grid>
+            );
+          })}
+        </Grid>
+      )}
+
+      {filteredMenuItems.length === 0 && !menuLoading && (
         <Box sx={{ textAlign: 'center', mt: 4 }}>
           <Typography variant="h6" color="text.secondary">
-            No menu items available.
+            No menu items found
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Try adjusting your search or filter criteria
           </Typography>
         </Box>
       )}

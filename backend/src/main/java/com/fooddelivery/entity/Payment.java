@@ -19,38 +19,44 @@ public class Payment {
     private Long id;
     
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
+    @JoinColumn(name = "order_id", nullable = false, unique = true)
     private Order order;
     
-    @Column(nullable = false, unique = true)
+    @Column(name = "razorpay_order_id", unique = true, nullable = false)
     private String razorpayOrderId;
     
-    @Column(nullable = false, unique = true)
+    @Column(name = "razorpay_payment_id", unique = true, nullable = false)
     private String razorpayPaymentId;
     
     @Column(nullable = false)
-    private Double amount;
+    private double amount;
     
     @Column(nullable = false)
     private String currency = "INR";
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PaymentStatus status;
+    private PaymentStatus status = PaymentStatus.PENDING;
     
-    @Column(nullable = false)
+    @Column(name = "payment_method", nullable = false)
     private String paymentMethod;
     
+    @Column
     private String description;
     
+    @Column(name = "error_code")
     private String errorCode;
     
+    @Column(name = "error_description")
     private String errorDescription;
     
+    @Column(name = "payment_time")
     private LocalDateTime paymentTime;
     
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
     
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     
     @PrePersist

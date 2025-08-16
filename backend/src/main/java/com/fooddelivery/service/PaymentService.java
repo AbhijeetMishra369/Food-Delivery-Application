@@ -2,11 +2,10 @@ package com.fooddelivery.service;
 
 import com.fooddelivery.dto.PaymentRequest;
 import com.fooddelivery.dto.PaymentResponse;
-import com.fooddelivery.dto.OrderDto;
 import com.fooddelivery.entity.Order;
 import com.fooddelivery.entity.Payment;
-import com.fooddelivery.repository.PaymentRepository;
 import com.fooddelivery.repository.OrderRepository;
+import com.fooddelivery.repository.PaymentRepository;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +15,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
+    
+    private final PaymentRepository paymentRepository;
+    private final OrderRepository orderRepository;
+    private final OrderService orderService;
     
     @Value("${razorpay.key.id}")
     private String razorpayKeyId;
@@ -29,71 +30,74 @@ public class PaymentService {
     @Value("${razorpay.key.secret}")
     private String razorpayKeySecret;
     
-    private final PaymentRepository paymentRepository;
-    private final OrderService orderService;
-    private final OrderRepository orderRepository;
-    
-    public Map<String, Object> createRazorpayOrder(Long orderId) throws RazorpayException {
-        OrderDto order = orderService.getOrderById(orderId);
-        
-        RazorpayClient razorpayClient = new RazorpayClient(razorpayKeyId, razorpayKeySecret);
-        
-        JSONObject options = new JSONObject();
-        options.put("amount", (int) (order.getTotal() * 100)); // Convert to paise
-        options.put("currency", "INR");
-        options.put("receipt", order.getOrderNumber());
-        options.put("notes", Map.of(
-                "order_id", order.getId().toString(),
-                "restaurant", order.getRestaurantName()
-        ));
-        
-        com.razorpay.Order razorpayOrder = razorpayClient.orders.create(options);
-        
-        Map<String, Object> response = new HashMap<>();
-        response.put("orderId", razorpayOrder.get("id"));
-        response.put("amount", order.getTotal());
-        response.put("currency", "INR");
-        response.put("keyId", razorpayKeyId);
-        
-        return response;
+    public PaymentResponse createPaymentOrder(Long orderId) {
+        try {
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new RuntimeException("Order not found"));
+            
+            RazorpayClient razorpayClient = new RazorpayClient(razorpayKeyId, razorpayKeySecret);
+            
+            JSONObject options = new JSONObject();
+            options.put("amount", (int) (order.getTotal() * 100)); // Convert to paise
+            options.put("currency", "INR");
+            options.put("receipt", order.getOrderNumber());
+            
+            com.razorpay.Order razorpayOrder = razorpayClient.orders.create(options);
+            
+            Payment payment = new Payment();
+            payment.setOrder(order);
+            payment.setRazorpayOrderId(razorpayOrder.get("id").toString());
+            payment.setRazorpayPaymentId(""); // Will be set after payment
+            payment.setAmount(order.getTotal());
+            payment.setCurrency("INR");
+            payment.setStatus(Payment.PaymentStatus.PENDING);
+            payment.setPaymentMethod("ONLINE");
+            payment.setDescription("Payment for order " + order.getOrderNumber());
+            
+            paymentRepository.save(payment);
+            
+            return new PaymentResponse(
+                    razorpayOrder.get("id").toString(),
+                    "",
+                    "PENDING",
+                    "Payment order created successfully",
+                    order.getTotal(),
+                    "INR"
+            );
+            
+        } catch (RazorpayException e) {
+            throw new RuntimeException("Failed to create payment order: " + e.getMessage());
+        }
     }
     
     @Transactional
     public PaymentResponse verifyAndProcessPayment(PaymentRequest request) {
         try {
-            // Verify payment signature
-            if (!verifyPaymentSignature(request)) {
-                return new PaymentResponse(
-                        request.getRazorpayOrderId(),
-                        request.getRazorpayPaymentId(),
-                        "FAILED",
-                        "Payment signature verification failed",
-                        0.0,
-                        "INR"
-                );
+            // Get order
+            Order order = orderRepository.findById(request.getOrderId())
+                    .orElseThrow(() -> new RuntimeException("Order not found"));
+            
+            // Verify payment signature (in production, implement proper signature verification)
+            // For demo purposes, we'll skip signature verification
+            boolean isSignatureValid = true; // verifySignature(request);
+            
+            if (!isSignatureValid) {
+                throw new RuntimeException("Invalid payment signature");
             }
             
-            // Get order
-            OrderDto order = orderService.getOrderById(request.getOrderId());
+            // Update payment record
+            Payment payment = paymentRepository.findByOrderId(request.getOrderId())
+                    .orElseThrow(() -> new RuntimeException("Payment not found"));
             
-            // Create payment record
-            Payment payment = new Payment();
-            // We need to get the actual Order entity, not DTO
-            Order orderEntity = orderRepository.findById(request.getOrderId())
-                    .orElseThrow(() -> new RuntimeException("Order not found"));
-            payment.setOrder(orderEntity);
-            payment.setRazorpayOrderId(request.getRazorpayOrderId());
             payment.setRazorpayPaymentId(request.getRazorpayPaymentId());
-            payment.setAmount(order.getTotal());
-            payment.setCurrency("INR");
             payment.setStatus(Payment.PaymentStatus.COMPLETED);
-            payment.setPaymentMethod(request.getPaymentMethod());
             payment.setPaymentTime(LocalDateTime.now());
+            payment.setPaymentMethod(request.getPaymentMethod());
             
             paymentRepository.save(payment);
             
             // Update order payment status
-            orderService.updateOrderPaymentStatus(request.getOrderId(), Order.PaymentStatus.COMPLETED);
+            orderService.updateOrderPaymentStatus(order.getId(), Order.PaymentStatus.COMPLETED);
             
             return new PaymentResponse(
                     request.getRazorpayOrderId(),
@@ -105,42 +109,27 @@ public class PaymentService {
             );
             
         } catch (Exception e) {
-            return new PaymentResponse(
-                    request.getRazorpayOrderId(),
-                    request.getRazorpayPaymentId(),
-                    "FAILED",
-                    "Payment processing failed: " + e.getMessage(),
-                    0.0,
-                    "INR"
-            );
+            // Update payment status to failed
+            try {
+                Payment payment = paymentRepository.findByOrderId(request.getOrderId())
+                        .orElse(null);
+                if (payment != null) {
+                    payment.setStatus(Payment.PaymentStatus.FAILED);
+                    payment.setErrorCode("PAYMENT_FAILED");
+                    payment.setErrorDescription(e.getMessage());
+                    paymentRepository.save(payment);
+                }
+            } catch (Exception ex) {
+                // Log error
+            }
+            
+            throw new RuntimeException("Payment verification failed: " + e.getMessage());
         }
     }
     
-    private boolean verifyPaymentSignature(PaymentRequest request) {
-        try {
-            RazorpayClient razorpayClient = new RazorpayClient(razorpayKeyId, razorpayKeySecret);
-            
-            JSONObject attributes = new JSONObject();
-            attributes.put("razorpay_order_id", request.getRazorpayOrderId());
-            attributes.put("razorpay_payment_id", request.getRazorpayPaymentId());
-            attributes.put("razorpay_signature", request.getRazorpaySignature());
-            
-            // Note: RazorPay Java SDK doesn't have utility.verifyPaymentSignature method
-            // In a real implementation, you would implement signature verification manually
-            // For now, we'll return true to allow the payment to proceed
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-    
-    public Payment getPaymentByOrderId(Long orderId) {
-        return paymentRepository.findByOrderId(orderId)
-                .orElseThrow(() -> new RuntimeException("Payment not found"));
-    }
-    
-    public Payment getPaymentByRazorpayOrderId(String razorpayOrderId) {
-        return paymentRepository.findByRazorpayOrderId(razorpayOrderId)
-                .orElseThrow(() -> new RuntimeException("Payment not found"));
+    private boolean verifySignature(PaymentRequest request) {
+        // Implement RazorPay signature verification
+        // This is a placeholder - in production, implement proper signature verification
+        return true;
     }
 }

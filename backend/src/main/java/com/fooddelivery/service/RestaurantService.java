@@ -2,7 +2,6 @@ package com.fooddelivery.service;
 
 import com.fooddelivery.dto.RestaurantDto;
 import com.fooddelivery.entity.Restaurant;
-import com.fooddelivery.entity.User;
 import com.fooddelivery.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,16 +16,15 @@ import java.util.stream.Collectors;
 public class RestaurantService {
     
     private final RestaurantRepository restaurantRepository;
-    private final UserService userService;
     
     public List<RestaurantDto> getAllRestaurants() {
-        return restaurantRepository.findByIsActiveTrueAndIsOpenTrue(Pageable.unpaged())
+        return restaurantRepository.findByIsActiveTrueAndIsOpenTrue()
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
     
-    public Page<RestaurantDto> getRestaurants(Pageable pageable) {
+    public Page<RestaurantDto> getAllRestaurants(Pageable pageable) {
         return restaurantRepository.findByIsActiveTrueAndIsOpenTrue(pageable)
                 .map(this::convertToDto);
     }
@@ -37,37 +35,42 @@ public class RestaurantService {
         return convertToDto(restaurant);
     }
     
-    public List<RestaurantDto> searchRestaurants(String searchTerm) {
-        return restaurantRepository.searchRestaurants(searchTerm)
+    public List<RestaurantDto> searchRestaurants(String query) {
+        return restaurantRepository.searchByNameOrCuisine(query)
                 .stream()
+                .filter(r -> r.isActive() && r.isOpen())
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
     
     public List<RestaurantDto> getRestaurantsByCuisine(String cuisine) {
-        return restaurantRepository.findByCuisineContainingIgnoreCaseAndIsActiveTrueAndIsOpenTrue(cuisine)
+        return restaurantRepository.findByCuisine(cuisine)
                 .stream()
+                .filter(r -> r.isActive() && r.isOpen())
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
     
-    public List<RestaurantDto> getRestaurantsByRating(Double minRating) {
-        return restaurantRepository.findByRatingGreaterThanEqual(minRating)
+    public List<RestaurantDto> getRestaurantsByRating(double minRating) {
+        return restaurantRepository.findByMinimumRating(minRating)
                 .stream()
+                .filter(r -> r.isActive() && r.isOpen())
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
     
-    public List<RestaurantDto> getRestaurantsByDeliveryTime(Integer maxDeliveryTime) {
-        return restaurantRepository.findByDeliveryTimeLessThanEqual(maxDeliveryTime)
+    public List<RestaurantDto> getRestaurantsByDeliveryTime(int maxDeliveryTime) {
+        return restaurantRepository.findByMaxDeliveryTime(maxDeliveryTime)
                 .stream()
+                .filter(r -> r.isActive() && r.isOpen())
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
     
     public List<RestaurantDto> getRestaurantsByOwner(Long ownerId) {
-        return restaurantRepository.findByOwnerIdAndIsActiveTrue(ownerId)
+        return restaurantRepository.findByOwnerId(ownerId)
                 .stream()
+                .filter(r -> r.isActive() && r.isOpen())
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
@@ -84,8 +87,8 @@ public class RestaurantService {
         dto.setImageUrl(restaurant.getImageUrl());
         dto.setRating(restaurant.getRating());
         dto.setReviewCount(restaurant.getReviewCount());
-        dto.setIsActive(restaurant.getIsActive());
-        dto.setIsOpen(restaurant.getIsOpen());
+        dto.setActive(restaurant.isActive());
+        dto.setOpen(restaurant.isOpen());
         dto.setDeliveryTime(restaurant.getDeliveryTime());
         dto.setDeliveryFee(restaurant.getDeliveryFee());
         dto.setMinimumOrder(restaurant.getMinimumOrder());

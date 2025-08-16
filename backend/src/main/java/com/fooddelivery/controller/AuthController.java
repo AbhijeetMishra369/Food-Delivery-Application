@@ -4,10 +4,11 @@ import com.fooddelivery.dto.AuthRequest;
 import com.fooddelivery.dto.AuthResponse;
 import com.fooddelivery.dto.RegisterRequest;
 import com.fooddelivery.service.UserService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")
@@ -27,11 +28,5 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
         AuthResponse response = userService.login(request);
         return ResponseEntity.ok(response);
-    }
-    
-    @PostMapping("/logout")
-    public ResponseEntity<String> logout() {
-        // In a stateless JWT setup, logout is handled client-side by removing the token
-        return ResponseEntity.ok("Logged out successfully");
     }
 }

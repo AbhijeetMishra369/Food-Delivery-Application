@@ -12,6 +12,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -22,6 +24,7 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     
     public AuthResponse register(RegisterRequest request) {
+        // Check if user already exists
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already registered");
         }
@@ -30,6 +33,7 @@ public class UserService {
             throw new RuntimeException("Phone number already registered");
         }
         
+        // Create new user
         User user = new User();
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
@@ -37,40 +41,31 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setPhone(request.getPhone());
         user.setAddress(request.getAddress());
-        user.setRole(User.Role.USER);
+        user.setRole(User.UserRole.USER);
+        user.setEnabled(true);
         
         User savedUser = userRepository.save(user);
         
+        // Generate JWT token
         String token = jwtUtil.generateToken(savedUser);
         
-        return new AuthResponse(
-                token,
-                savedUser.getId(),
-                savedUser.getEmail(),
-                savedUser.getFirstName(),
-                savedUser.getLastName(),
-                savedUser.getRole().name()
-        );
+        return new AuthResponse(token, savedUser);
     }
     
     public AuthResponse login(AuthRequest request) {
+        // Authenticate user
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
         
+        // Get user details
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
         
+        // Generate JWT token
         String token = jwtUtil.generateToken(user);
         
-        return new AuthResponse(
-                token,
-                user.getId(),
-                user.getEmail(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getRole().name()
-        );
+        return new AuthResponse(token, user);
     }
     
     public User getUserById(Long id) {
@@ -81,5 +76,9 @@ public class UserService {
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+    
+    public Optional<User> findUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 }

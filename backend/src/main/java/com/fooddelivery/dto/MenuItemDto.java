@@ -14,12 +14,12 @@ public class MenuItemDto {
     private Long id;
     private String name;
     private String description;
-    private Double price;
+    private double price;
     private String imageUrl;
-    private Boolean isVegetarian;
-    private Boolean isSpicy;
-    private Boolean isAvailable;
-    private Integer preparationTime;
+    private boolean isVegetarian;
+    private boolean isSpicy;
+    private boolean isAvailable;
+    private int preparationTime;
     private Long restaurantId;
     private String restaurantName;
     private Long categoryId;

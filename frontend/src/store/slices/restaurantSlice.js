@@ -28,14 +28,14 @@ export const fetchRestaurantById = createAsyncThunk(
   }
 );
 
-export const fetchMenuItems = createAsyncThunk(
-  'restaurant/fetchMenuItems',
-  async (restaurantId, { rejectWithValue }) => {
+export const searchRestaurants = createAsyncThunk(
+  'restaurant/searchRestaurants',
+  async (query, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/menu-items/restaurant/${restaurantId}`);
+      const response = await axios.get(`${API_BASE_URL}/restaurants/search?q=${query}`);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Failed to fetch menu items');
+      return rejectWithValue(error.response?.data || 'Failed to search restaurants');
     }
   }
 );
@@ -43,7 +43,6 @@ export const fetchMenuItems = createAsyncThunk(
 const initialState = {
   restaurants: [],
   currentRestaurant: null,
-  menuItems: [],
   loading: false,
   error: null,
 };
@@ -57,7 +56,6 @@ const restaurantSlice = createSlice({
     },
     clearCurrentRestaurant: (state) => {
       state.currentRestaurant = null;
-      state.menuItems = [];
     },
   },
   extraReducers: (builder) => {
@@ -88,16 +86,16 @@ const restaurantSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // Fetch menu items
-      .addCase(fetchMenuItems.pending, (state) => {
+      // Search restaurants
+      .addCase(searchRestaurants.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchMenuItems.fulfilled, (state, action) => {
+      .addCase(searchRestaurants.fulfilled, (state, action) => {
         state.loading = false;
-        state.menuItems = action.payload;
+        state.restaurants = action.payload;
       })
-      .addCase(fetchMenuItems.rejected, (state, action) => {
+      .addCase(searchRestaurants.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -17,12 +17,12 @@ public class PaymentRequest {
     @NotBlank(message = "Payment method is required")
     private String paymentMethod;
     
-    @NotBlank(message = "Razorpay order ID is required")
+    @NotBlank(message = "RazorPay order ID is required")
     private String razorpayOrderId;
     
-    @NotBlank(message = "Razorpay payment ID is required")
+    @NotBlank(message = "RazorPay payment ID is required")
     private String razorpayPaymentId;
     
-    @NotBlank(message = "Razorpay signature is required")
+    @NotBlank(message = "RazorPay signature is required")
     private String razorpaySignature;
 }

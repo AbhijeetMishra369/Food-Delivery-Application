@@ -9,26 +9,49 @@ import {
   Badge,
   IconButton,
   Box,
+  Avatar,
+  Menu,
+  MenuItem,
 } from '@mui/material';
-import { ShoppingCart, Restaurant } from '@mui/icons-material';
+import {
+  ShoppingCart as CartIcon,
+  Restaurant as RestaurantIcon,
+  Person as PersonIcon,
+} from '@mui/icons-material';
 import { logout } from '../store/slices/authSlice';
-import { selectCartItemCount } from '../store/slices/cartSlice';
 
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useSelector((state) => state.auth);
-  const cartItemCount = useSelector(selectCartItemCount);
+  const { items } = useSelector((state) => state.cart);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const cartItemCount = items.reduce((count, item) => count + item.quantity, 0);
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleLogout = () => {
     dispatch(logout());
+    handleMenuClose();
     navigate('/');
   };
 
+  const handleProfile = () => {
+    handleMenuClose();
+    navigate('/orders');
+  };
+
   return (
-    <AppBar position="fixed">
+    <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
       <Toolbar>
-        <Restaurant sx={{ mr: 2 }} />
+        <RestaurantIcon sx={{ mr: 2 }} />
         <Typography
           variant="h6"
           component={Link}
@@ -46,35 +69,66 @@ const Header = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           {isAuthenticated ? (
             <>
-              <Button
-                color="inherit"
-                component={Link}
-                to="/orders"
-              >
-                My Orders
-              </Button>
               <IconButton
                 color="inherit"
                 component={Link}
                 to="/cart"
+                sx={{ position: 'relative' }}
               >
                 <Badge badgeContent={cartItemCount} color="secondary">
-                  <ShoppingCart />
+                  <CartIcon />
                 </Badge>
               </IconButton>
-              <Typography variant="body2" sx={{ mr: 1 }}>
-                Welcome, {user?.firstName || 'User'}!
-              </Typography>
-              <Button color="inherit" onClick={handleLogout}>
-                Logout
-              </Button>
+
+              <IconButton
+                color="inherit"
+                onClick={handleMenuOpen}
+                sx={{ ml: 1 }}
+              >
+                <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main' }}>
+                  <PersonIcon />
+                </Avatar>
+              </IconButton>
+
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+              >
+                <MenuItem onClick={handleProfile}>
+                  <Typography variant="body2">
+                    {user?.firstName} {user?.lastName}
+                  </Typography>
+                </MenuItem>
+                <MenuItem onClick={handleProfile}>My Orders</MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              </Menu>
             </>
           ) : (
             <>
-              <Button color="inherit" component={Link} to="/login">
+              <Button
+                color="inherit"
+                component={Link}
+                to="/login"
+                sx={{ textTransform: 'none' }}
+              >
                 Login
               </Button>
-              <Button color="inherit" component={Link} to="/register">
+              <Button
+                variant="contained"
+                color="secondary"
+                component={Link}
+                to="/register"
+                sx={{ textTransform: 'none' }}
+              >
                 Register
               </Button>
             </>

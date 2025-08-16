@@ -30,17 +30,21 @@ public class SecurityConfig {
             .cors().and()
             .csrf().disable()
             .authorizeHttpRequests()
-            .requestMatchers("/auth/**").permitAll()
-            .requestMatchers("/restaurants/**").permitAll()
-            .requestMatchers("/categories/**").permitAll()
-            .requestMatchers("/menu-items/**").permitAll()
-            .anyRequest().authenticated()
+                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/restaurants/**").permitAll()
+                .requestMatchers("/categories/**").permitAll()
+                .requestMatchers("/menu-items/**").permitAll()
+                .requestMatchers("/h2-console/**").permitAll()
+                .anyRequest().authenticated()
             .and()
-            .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
-            .authenticationProvider(authenticationProvider)
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        
+        // Allow H2 console frame
+        http.headers().frameOptions().disable();
         
         return http.build();
     }

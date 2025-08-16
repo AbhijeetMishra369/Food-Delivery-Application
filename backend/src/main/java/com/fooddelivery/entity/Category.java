@@ -19,22 +19,25 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
     
     @Column(nullable = false)
     private String description;
     
+    @Column(name = "image_url")
     private String imageUrl;
     
-    @Column(nullable = false)
-    private Boolean isActive = true;
+    @Column(name = "is_active")
+    private boolean isActive = true;
     
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<MenuItem> menuItems;
     
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
     
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     
     @PrePersist

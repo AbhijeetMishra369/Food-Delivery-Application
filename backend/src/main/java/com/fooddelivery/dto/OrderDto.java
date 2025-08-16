@@ -20,10 +20,10 @@ public class OrderDto {
     private Long restaurantId;
     private String restaurantName;
     private List<OrderItemDto> orderItems;
-    private Double subtotal;
-    private Double deliveryFee;
-    private Double tax;
-    private Double total;
+    private double subtotal;
+    private double deliveryFee;
+    private double tax;
+    private double total;
     private String deliveryAddress;
     private String deliveryPhone;
     private String deliveryInstructions;
@@ -46,9 +46,9 @@ public class OrderDto {
         private Long id;
         private Long menuItemId;
         private String menuItemName;
-        private Integer quantity;
-        private Double unitPrice;
-        private Double totalPrice;
+        private int quantity;
+        private double unitPrice;
+        private double totalPrice;
         private String specialInstructions;
     }
 }

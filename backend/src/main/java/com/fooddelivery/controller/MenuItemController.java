@@ -23,39 +23,39 @@ public class MenuItemController {
     }
     
     @GetMapping("/restaurant/{restaurantId}/category/{categoryId}")
-    public ResponseEntity<List<MenuItemDto>> getMenuItemsByCategory(
-            @PathVariable Long restaurantId,
+    public ResponseEntity<List<MenuItemDto>> getMenuItemsByRestaurantAndCategory(
+            @PathVariable Long restaurantId, 
             @PathVariable Long categoryId) {
-        List<MenuItemDto> menuItems = menuItemService.getMenuItemsByCategory(restaurantId, categoryId);
+        List<MenuItemDto> menuItems = menuItemService.getMenuItemsByRestaurantAndCategory(restaurantId, categoryId);
         return ResponseEntity.ok(menuItems);
     }
     
     @GetMapping("/restaurant/{restaurantId}/search")
     public ResponseEntity<List<MenuItemDto>> searchMenuItems(
-            @PathVariable Long restaurantId,
+            @PathVariable Long restaurantId, 
             @RequestParam String q) {
         List<MenuItemDto> menuItems = menuItemService.searchMenuItems(restaurantId, q);
         return ResponseEntity.ok(menuItems);
     }
     
     @GetMapping("/restaurant/{restaurantId}/vegetarian")
-    public ResponseEntity<List<MenuItemDto>> getVegetarianItems(@PathVariable Long restaurantId) {
-        List<MenuItemDto> menuItems = menuItemService.getVegetarianItems(restaurantId);
+    public ResponseEntity<List<MenuItemDto>> getVegetarianMenuItems(@PathVariable Long restaurantId) {
+        List<MenuItemDto> menuItems = menuItemService.getVegetarianMenuItems(restaurantId);
         return ResponseEntity.ok(menuItems);
     }
     
     @GetMapping("/restaurant/{restaurantId}/spicy")
-    public ResponseEntity<List<MenuItemDto>> getSpicyItems(@PathVariable Long restaurantId) {
-        List<MenuItemDto> menuItems = menuItemService.getSpicyItems(restaurantId);
+    public ResponseEntity<List<MenuItemDto>> getSpicyMenuItems(@PathVariable Long restaurantId) {
+        List<MenuItemDto> menuItems = menuItemService.getSpicyMenuItems(restaurantId);
         return ResponseEntity.ok(menuItems);
     }
     
     @GetMapping("/restaurant/{restaurantId}/price-range")
-    public ResponseEntity<List<MenuItemDto>> getItemsByPriceRange(
+    public ResponseEntity<List<MenuItemDto>> getMenuItemsByPriceRange(
             @PathVariable Long restaurantId,
-            @RequestParam Double minPrice,
-            @RequestParam Double maxPrice) {
-        List<MenuItemDto> menuItems = menuItemService.getItemsByPriceRange(restaurantId, minPrice, maxPrice);
+            @RequestParam double minPrice,
+            @RequestParam double maxPrice) {
+        List<MenuItemDto> menuItems = menuItemService.getMenuItemsByPriceRange(restaurantId, minPrice, maxPrice);
         return ResponseEntity.ok(menuItems);
     }
     

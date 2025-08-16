@@ -1,16 +1,25 @@
 package com.fooddelivery.config;
 
-import com.fooddelivery.entity.*;
-import com.fooddelivery.repository.*;
+import com.fooddelivery.entity.Category;
+import com.fooddelivery.entity.MenuItem;
+import com.fooddelivery.entity.Restaurant;
+import com.fooddelivery.entity.User;
+import com.fooddelivery.repository.CategoryRepository;
+import com.fooddelivery.repository.MenuItemRepository;
+import com.fooddelivery.repository.RestaurantRepository;
+import com.fooddelivery.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class DataInitializer implements CommandLineRunner {
     
     private final UserRepository userRepository;
@@ -21,104 +30,135 @@ public class DataInitializer implements CommandLineRunner {
     
     @Override
     public void run(String... args) throws Exception {
-        // Create sample users
-        User user1 = new User();
-        user1.setEmail("user@example.com");
-        user1.setPassword(passwordEncoder.encode("password"));
-        user1.setFirstName("John");
-        user1.setLastName("Doe");
-        user1.setPhone("1234567890");
-        user1.setAddress("123 Main St, City");
-        user1.setRole(User.Role.USER);
-        userRepository.save(user1);
-        
-        User restaurantOwner = new User();
-        restaurantOwner.setEmail("owner@restaurant.com");
-        restaurantOwner.setPassword(passwordEncoder.encode("password"));
-        restaurantOwner.setFirstName("Restaurant");
-        restaurantOwner.setLastName("Owner");
-        restaurantOwner.setPhone("9876543210");
-        restaurantOwner.setAddress("456 Restaurant Ave, City");
-        restaurantOwner.setRole(User.Role.RESTAURANT_OWNER);
-        userRepository.save(restaurantOwner);
-        
-        // Create sample categories
-        Category appetizers = new Category();
-        appetizers.setName("Appetizers");
-        appetizers.setDescription("Start your meal with these delicious appetizers");
-        categoryRepository.save(appetizers);
-        
-        Category mainCourse = new Category();
-        mainCourse.setName("Main Course");
-        mainCourse.setDescription("Delicious main dishes");
-        categoryRepository.save(mainCourse);
-        
-        Category desserts = new Category();
-        desserts.setName("Desserts");
-        desserts.setDescription("Sweet treats to end your meal");
-        categoryRepository.save(desserts);
-        
-        // Create sample restaurant
-        Restaurant restaurant = new Restaurant();
-        restaurant.setName("Delicious Food Restaurant");
-        restaurant.setDescription("Serving the best food in town");
-        restaurant.setAddress("789 Food Street, City");
-        restaurant.setPhone("5551234567");
-        restaurant.setEmail("info@deliciousfood.com");
-        restaurant.setCuisine("International");
-        restaurant.setRating(4.5);
-        restaurant.setReviewCount(100);
-        restaurant.setDeliveryTime(30);
-        restaurant.setDeliveryFee(5.0);
-        restaurant.setMinimumOrder(20.0);
-        restaurant.setOwner(restaurantOwner);
-        restaurantRepository.save(restaurant);
-        
-        // Create sample menu items
-        MenuItem item1 = new MenuItem();
-        item1.setName("Chicken Wings");
-        item1.setDescription("Crispy chicken wings with your choice of sauce");
-        item1.setPrice(12.99);
-        item1.setIsVegetarian(false);
-        item1.setIsSpicy(true);
-        item1.setPreparationTime(15);
-        item1.setRestaurant(restaurant);
-        item1.setCategory(appetizers);
-        menuItemRepository.save(item1);
-        
-        MenuItem item2 = new MenuItem();
-        item2.setName("Grilled Chicken");
-        item2.setDescription("Grilled chicken breast with herbs and spices");
-        item2.setPrice(18.99);
-        item2.setIsVegetarian(false);
-        item2.setIsSpicy(false);
-        item2.setPreparationTime(20);
-        item2.setRestaurant(restaurant);
-        item2.setCategory(mainCourse);
-        menuItemRepository.save(item2);
-        
-        MenuItem item3 = new MenuItem();
-        item3.setName("Chocolate Cake");
-        item3.setDescription("Rich chocolate cake with chocolate frosting");
-        item3.setPrice(8.99);
-        item3.setIsVegetarian(true);
-        item3.setIsSpicy(false);
-        item3.setPreparationTime(5);
-        item3.setRestaurant(restaurant);
-        item3.setCategory(desserts);
-        menuItemRepository.save(item3);
-        
-        MenuItem item4 = new MenuItem();
-        item4.setName("Caesar Salad");
-        item4.setDescription("Fresh romaine lettuce with Caesar dressing");
-        item4.setPrice(10.99);
-        item4.setIsVegetarian(true);
-        item4.setIsSpicy(false);
-        item4.setPreparationTime(10);
-        item4.setRestaurant(restaurant);
-        item4.setCategory(appetizers);
-        menuItemRepository.save(item4);
-        
-        System.out.println("Sample data initialized successfully!");
+        if (userRepository.count() == 0) {
+            log.info("Initializing sample data...");
+            
+            // Create Users
+            User adminUser = new User();
+            adminUser.setEmail("admin@example.com");
+            adminUser.setPassword(passwordEncoder.encode("adminpassword"));
+            adminUser.setFirstName("Admin");
+            adminUser.setLastName("User");
+            adminUser.setPhone("9876543210");
+            adminUser.setAddress("123 Admin St");
+            adminUser.setRole(User.UserRole.ADMIN);
+            adminUser.setEnabled(true);
+            
+            User regularUser = new User();
+            regularUser.setEmail("user@example.com");
+            regularUser.setPassword(passwordEncoder.encode("password"));
+            regularUser.setFirstName("Regular");
+            regularUser.setLastName("User");
+            regularUser.setPhone("1234567890");
+            regularUser.setAddress("456 User Ave");
+            regularUser.setRole(User.UserRole.USER);
+            regularUser.setEnabled(true);
+            
+            User restaurantOwner = new User();
+            restaurantOwner.setEmail("owner@example.com");
+            restaurantOwner.setPassword(passwordEncoder.encode("ownerpassword"));
+            restaurantOwner.setFirstName("Restaurant");
+            restaurantOwner.setLastName("Owner");
+            restaurantOwner.setPhone("1122334455");
+            restaurantOwner.setAddress("789 Owner Blvd");
+            restaurantOwner.setRole(User.UserRole.RESTAURANT_OWNER);
+            restaurantOwner.setEnabled(true);
+            
+            userRepository.saveAll(Arrays.asList(adminUser, regularUser, restaurantOwner));
+            
+            // Create Categories
+            Category appetizers = new Category();
+            appetizers.setName("Appetizers");
+            appetizers.setDescription("Delicious starters");
+            appetizers.setImageUrl("https://example.com/appetizers.jpg");
+            appetizers.setActive(true);
+            
+            Category mainCourses = new Category();
+            mainCourses.setName("Main Courses");
+            mainCourses.setDescription("Hearty main dishes");
+            mainCourses.setImageUrl("https://example.com/maincourses.jpg");
+            mainCourses.setActive(true);
+            
+            Category desserts = new Category();
+            desserts.setName("Desserts");
+            desserts.setDescription("Sweet treats");
+            desserts.setImageUrl("https://example.com/desserts.jpg");
+            desserts.setActive(true);
+            
+            categoryRepository.saveAll(Arrays.asList(appetizers, mainCourses, desserts));
+            
+            // Create Restaurant
+            Restaurant restaurant = new Restaurant();
+            restaurant.setName("Delicious Food Restaurant");
+            restaurant.setDescription("Serving the best food in town!");
+            restaurant.setAddress("101 Foodie Lane");
+            restaurant.setPhone("555-123-4567");
+            restaurant.setEmail("info@deliciousfood.com");
+            restaurant.setCuisine("American");
+            restaurant.setImageUrl("https://example.com/restaurant.jpg");
+            restaurant.setRating(4.5);
+            restaurant.setReviewCount(120);
+            restaurant.setActive(true);
+            restaurant.setOpen(true);
+            restaurant.setDeliveryTime(30);
+            restaurant.setDeliveryFee(5.0);
+            restaurant.setMinimumOrder(10.0);
+            restaurant.setOwner(restaurantOwner);
+            
+            restaurantRepository.save(restaurant);
+            
+            // Create Menu Items
+            MenuItem item1 = new MenuItem();
+            item1.setName("Chicken Wings");
+            item1.setDescription("Crispy chicken wings with your choice of sauce.");
+            item1.setPrice(12.99);
+            item1.setImageUrl("https://example.com/chickenwings.jpg");
+            item1.setVegetarian(false);
+            item1.setSpicy(true);
+            item1.setAvailable(true);
+            item1.setPreparationTime(20);
+            item1.setRestaurant(restaurant);
+            item1.setCategory(appetizers);
+            
+            MenuItem item2 = new MenuItem();
+            item2.setName("Grilled Chicken");
+            item2.setDescription("Healthy grilled chicken breast with seasonal vegetables.");
+            item2.setPrice(15.99);
+            item2.setImageUrl("https://example.com/grilledchicken.jpg");
+            item2.setVegetarian(false);
+            item2.setSpicy(false);
+            item2.setAvailable(true);
+            item2.setPreparationTime(25);
+            item2.setRestaurant(restaurant);
+            item2.setCategory(mainCourses);
+            
+            MenuItem item3 = new MenuItem();
+            item3.setName("Chocolate Cake");
+            item3.setDescription("Rich chocolate cake with a scoop of vanilla ice cream.");
+            item3.setPrice(8.99);
+            item3.setImageUrl("https://example.com/chocolatecake.jpg");
+            item3.setVegetarian(true);
+            item3.setSpicy(false);
+            item3.setAvailable(true);
+            item3.setPreparationTime(10);
+            item3.setRestaurant(restaurant);
+            item3.setCategory(desserts);
+            
+            MenuItem item4 = new MenuItem();
+            item4.setName("Caesar Salad");
+            item4.setDescription("Fresh romaine lettuce, croutons, parmesan cheese, and Caesar dressing.");
+            item4.setPrice(10.99);
+            item4.setImageUrl("https://example.com/caesarsalad.jpg");
+            item4.setVegetarian(true);
+            item4.setSpicy(false);
+            item4.setAvailable(true);
+            item4.setPreparationTime(15);
+            item4.setRestaurant(restaurant);
+            item4.setCategory(appetizers);
+            
+            menuItemRepository.saveAll(Arrays.asList(item1, item2, item3, item4));
+            
+            log.info("Sample data initialized successfully!");
+        }
     }
 }

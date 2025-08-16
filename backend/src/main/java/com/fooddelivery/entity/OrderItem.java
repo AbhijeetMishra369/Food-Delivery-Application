@@ -27,18 +27,21 @@ public class OrderItem {
     private MenuItem menuItem;
     
     @Column(nullable = false)
-    private Integer quantity;
+    private int quantity;
     
-    @Column(nullable = false)
-    private Double unitPrice;
+    @Column(name = "unit_price", nullable = false)
+    private double unitPrice;
     
-    @Column(nullable = false)
-    private Double totalPrice;
+    @Column(name = "total_price", nullable = false)
+    private double totalPrice;
     
+    @Column(name = "special_instructions")
     private String specialInstructions;
     
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
     
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     
     @PrePersist

@@ -37,28 +37,29 @@ public class Restaurant {
     @Column(nullable = false)
     private String cuisine;
     
+    @Column(name = "image_url")
     private String imageUrl;
     
     @Column(nullable = false)
-    private Double rating = 0.0;
+    private double rating = 0.0;
     
-    @Column(nullable = false)
-    private Integer reviewCount = 0;
+    @Column(name = "review_count")
+    private int reviewCount = 0;
     
-    @Column(nullable = false)
-    private Boolean isActive = true;
+    @Column(name = "is_active")
+    private boolean isActive = true;
     
-    @Column(nullable = false)
-    private Boolean isOpen = true;
+    @Column(name = "is_open")
+    private boolean isOpen = true;
     
-    @Column(nullable = false)
-    private Integer deliveryTime = 30; // in minutes
+    @Column(name = "delivery_time")
+    private int deliveryTime = 30;
     
-    @Column(nullable = false)
-    private Double deliveryFee = 0.0;
+    @Column(name = "delivery_fee")
+    private double deliveryFee = 5.0;
     
-    @Column(nullable = false)
-    private Double minimumOrder = 0.0;
+    @Column(name = "minimum_order")
+    private double minimumOrder = 10.0;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
@@ -70,8 +71,10 @@ public class Restaurant {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Order> orders;
     
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
     
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     
     @PrePersist

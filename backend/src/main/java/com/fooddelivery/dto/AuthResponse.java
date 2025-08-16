@@ -1,5 +1,6 @@
 package com.fooddelivery.dto;
 
+import com.fooddelivery.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,14 +16,14 @@ public class AuthResponse {
     private String email;
     private String firstName;
     private String lastName;
-    private String role;
+    private User.UserRole role;
     
-    public AuthResponse(String token, Long userId, String email, String firstName, String lastName, String role) {
+    public AuthResponse(String token, User user) {
         this.token = token;
-        this.userId = userId;
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.role = role;
+        this.userId = user.getId();
+        this.email = user.getEmail();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.role = user.getRole();
     }
 }

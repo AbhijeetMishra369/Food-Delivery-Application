@@ -16,18 +16,22 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     
     Page<Restaurant> findByIsActiveTrueAndIsOpenTrue(Pageable pageable);
     
-    List<Restaurant> findByCuisineContainingIgnoreCaseAndIsActiveTrueAndIsOpenTrue(String cuisine);
+    List<Restaurant> findByIsActiveTrueAndIsOpenTrue();
     
-    @Query("SELECT r FROM Restaurant r WHERE r.name LIKE %:searchTerm% OR r.cuisine LIKE %:searchTerm% AND r.isActive = true AND r.isOpen = true")
-    List<Restaurant> searchRestaurants(@Param("searchTerm") String searchTerm);
+    List<Restaurant> findByCuisine(String cuisine);
     
-    List<Restaurant> findByOwnerIdAndIsActiveTrue(Long ownerId);
+    @Query("SELECT r FROM Restaurant r WHERE " +
+           "LOWER(r.name) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "LOWER(r.cuisine) LIKE LOWER(CONCAT('%', :query, '%'))")
+    List<Restaurant> searchByNameOrCuisine(@Param("query") String query);
+    
+    List<Restaurant> findByOwnerId(Long ownerId);
     
     Optional<Restaurant> findByIdAndIsActiveTrue(Long id);
     
-    @Query("SELECT r FROM Restaurant r WHERE r.rating >= :minRating AND r.isActive = true AND r.isOpen = true ORDER BY r.rating DESC")
-    List<Restaurant> findByRatingGreaterThanEqual(@Param("minRating") Double minRating);
+    @Query("SELECT r FROM Restaurant r WHERE r.rating >= :minRating")
+    List<Restaurant> findByMinimumRating(@Param("minRating") double minRating);
     
-    @Query("SELECT r FROM Restaurant r WHERE r.deliveryTime <= :maxDeliveryTime AND r.isActive = true AND r.isOpen = true ORDER BY r.deliveryTime ASC")
-    List<Restaurant> findByDeliveryTimeLessThanEqual(@Param("maxDeliveryTime") Integer maxDeliveryTime);
+    @Query("SELECT r FROM Restaurant r WHERE r.deliveryTime <= :maxDeliveryTime")
+    List<Restaurant> findByMaxDeliveryTime(@Param("maxDeliveryTime") int maxDeliveryTime);
 }

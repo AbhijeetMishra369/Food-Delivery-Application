@@ -25,21 +25,22 @@ public class MenuItem {
     private String description;
     
     @Column(nullable = false)
-    private Double price;
+    private double price;
     
+    @Column(name = "image_url")
     private String imageUrl;
     
-    @Column(nullable = false)
-    private Boolean isVegetarian = false;
+    @Column(name = "is_vegetarian")
+    private boolean isVegetarian = false;
     
-    @Column(nullable = false)
-    private Boolean isSpicy = false;
+    @Column(name = "is_spicy")
+    private boolean isSpicy = false;
     
-    @Column(nullable = false)
-    private Boolean isAvailable = true;
+    @Column(name = "is_available")
+    private boolean isAvailable = true;
     
-    @Column(nullable = false)
-    private Integer preparationTime = 15; // in minutes
+    @Column(name = "preparation_time")
+    private int preparationTime = 15; // in minutes
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
@@ -49,8 +50,10 @@ public class MenuItem {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
     
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
     
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     
     @PrePersist

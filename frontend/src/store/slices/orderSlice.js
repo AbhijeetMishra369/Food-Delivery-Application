@@ -3,24 +3,15 @@ import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:8080/api';
 
-// Create axios instance with auth header
-const createAuthAxios = () => {
-  const token = localStorage.getItem('token');
-  return axios.create({
-    baseURL: API_BASE_URL,
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-};
-
 // Async thunks
 export const createOrder = createAsyncThunk(
   'order/createOrder',
   async (orderData, { rejectWithValue }) => {
     try {
-      const authAxios = createAuthAxios();
-      const response = await authAxios.post('/orders', orderData);
+      const token = localStorage.getItem('token');
+      const response = await axios.post(`${API_BASE_URL}/orders`, orderData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to create order');
@@ -32,8 +23,10 @@ export const fetchUserOrders = createAsyncThunk(
   'order/fetchUserOrders',
   async (_, { rejectWithValue }) => {
     try {
-      const authAxios = createAuthAxios();
-      const response = await authAxios.get('/orders/user');
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API_BASE_URL}/orders/user`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch orders');
@@ -45,8 +38,10 @@ export const fetchOrderById = createAsyncThunk(
   'order/fetchOrderById',
   async (orderId, { rejectWithValue }) => {
     try {
-      const authAxios = createAuthAxios();
-      const response = await authAxios.get(`/orders/${orderId}`);
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API_BASE_URL}/orders/${orderId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch order');

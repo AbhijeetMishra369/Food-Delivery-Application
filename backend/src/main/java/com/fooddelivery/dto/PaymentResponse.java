@@ -13,6 +13,6 @@ public class PaymentResponse {
     private String razorpayPaymentId;
     private String status;
     private String message;
-    private Double amount;
+    private double amount;
     private String currency;
 }

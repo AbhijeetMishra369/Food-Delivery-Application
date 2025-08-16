@@ -3,9 +3,9 @@ package com.fooddelivery.service;
 import com.fooddelivery.dto.OrderDto;
 import com.fooddelivery.dto.OrderRequest;
 import com.fooddelivery.entity.*;
+import com.fooddelivery.repository.MenuItemRepository;
 import com.fooddelivery.repository.OrderRepository;
 import com.fooddelivery.repository.RestaurantRepository;
-import com.fooddelivery.repository.MenuItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,35 +21,38 @@ import java.util.stream.Collectors;
 public class OrderService {
     
     private final OrderRepository orderRepository;
-    private final UserService userService;
-    private final RestaurantService restaurantService;
-    private final MenuItemService menuItemService;
     private final RestaurantRepository restaurantRepository;
     private final MenuItemRepository menuItemRepository;
     
     @Transactional
     public OrderDto createOrder(OrderRequest request, Long userId) {
-        User user = userService.getUserById(userId);
-        // Get restaurant entity directly
+        // Get restaurant
         Restaurant restaurant = restaurantRepository.findById(request.getRestaurantId())
                 .orElseThrow(() -> new RuntimeException("Restaurant not found"));
         
+        // Create order
         Order order = new Order();
-        order.setUser(user);
+        order.setOrderNumber("ORD" + System.currentTimeMillis());
         order.setRestaurant(restaurant);
         order.setDeliveryAddress(request.getDeliveryAddress());
         order.setDeliveryPhone(request.getDeliveryPhone());
         order.setDeliveryInstructions(request.getDeliveryInstructions());
         order.setPaymentMethod(request.getPaymentMethod());
-        order.setEstimatedDeliveryTime(LocalDateTime.now().plusMinutes(restaurant.getDeliveryTime()));
+        order.setStatus(Order.OrderStatus.PENDING);
+        order.setPaymentStatus(Order.PaymentStatus.PENDING);
         
-        // Calculate order totals
+        // Calculate totals
         double subtotal = 0.0;
+        double deliveryFee = restaurant.getDeliveryFee();
+        double tax = 0.0; // 10% tax
+        double total = 0.0;
+        
+        // Create order items
         List<OrderItem> orderItems = request.getItems().stream()
                 .map(itemRequest -> {
-                    // Get menu item entity directly
                     MenuItem menuItem = menuItemRepository.findById(itemRequest.getMenuItemId())
                             .orElseThrow(() -> new RuntimeException("Menu item not found"));
+                    
                     OrderItem orderItem = new OrderItem();
                     orderItem.setOrder(order);
                     orderItem.setMenuItem(menuItem);
@@ -57,22 +60,30 @@ public class OrderService {
                     orderItem.setUnitPrice(menuItem.getPrice());
                     orderItem.setTotalPrice(menuItem.getPrice() * itemRequest.getQuantity());
                     orderItem.setSpecialInstructions(itemRequest.getSpecialInstructions());
+                    
+                    subtotal += orderItem.getTotalPrice();
                     return orderItem;
                 })
                 .collect(Collectors.toList());
         
-        subtotal = orderItems.stream()
-                .mapToDouble(OrderItem::getTotalPrice)
-                .sum();
+        tax = subtotal * 0.10; // 10% tax
+        total = subtotal + deliveryFee + tax;
         
-        order.setOrderItems(orderItems);
         order.setSubtotal(subtotal);
-        order.setDeliveryFee(restaurant.getDeliveryFee());
-        order.setTax(subtotal * 0.05); // 5% tax
-        order.setTotal(subtotal + order.getDeliveryFee() + order.getTax());
+        order.setDeliveryFee(deliveryFee);
+        order.setTax(tax);
+        order.setTotal(total);
+        order.setOrderItems(orderItems);
         
         Order savedOrder = orderRepository.save(order);
+        
         return convertToDto(savedOrder);
+    }
+    
+    public OrderDto getOrderById(Long id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+        return convertToDto(order);
     }
     
     public List<OrderDto> getUserOrders(Long userId) {
@@ -83,7 +94,7 @@ public class OrderService {
     }
     
     public Page<OrderDto> getUserOrders(Long userId, Pageable pageable) {
-        return orderRepository.findByUserId(userId, pageable)
+        return orderRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable)
                 .map(this::convertToDto);
     }
     
@@ -92,23 +103,6 @@ public class OrderService {
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
-    }
-    
-    public Page<OrderDto> getRestaurantOrders(Long restaurantId, Pageable pageable) {
-        return orderRepository.findByRestaurantId(restaurantId, pageable)
-                .map(this::convertToDto);
-    }
-    
-    public OrderDto getOrderById(Long id) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
-        return convertToDto(order);
-    }
-    
-    public OrderDto getOrderByOrderNumber(String orderNumber) {
-        Order order = orderRepository.findByOrderNumber(orderNumber)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
-        return convertToDto(order);
     }
     
     @Transactional
@@ -122,8 +116,8 @@ public class OrderService {
             order.setActualDeliveryTime(LocalDateTime.now());
         }
         
-        Order updatedOrder = orderRepository.save(order);
-        return convertToDto(updatedOrder);
+        Order savedOrder = orderRepository.save(order);
+        return convertToDto(savedOrder);
     }
     
     @Transactional
@@ -132,19 +126,14 @@ public class OrderService {
                 .orElseThrow(() -> new RuntimeException("Order not found"));
         
         order.setPaymentStatus(paymentStatus);
-        
-        Order updatedOrder = orderRepository.save(order);
-        return convertToDto(updatedOrder);
+        Order savedOrder = orderRepository.save(order);
+        return convertToDto(savedOrder);
     }
     
     private OrderDto convertToDto(Order order) {
         OrderDto dto = new OrderDto();
         dto.setId(order.getId());
         dto.setOrderNumber(order.getOrderNumber());
-        dto.setUserId(order.getUser().getId());
-        dto.setUserName(order.getUser().getFirstName() + " " + order.getUser().getLastName());
-        dto.setRestaurantId(order.getRestaurant().getId());
-        dto.setRestaurantName(order.getRestaurant().getName());
         dto.setSubtotal(order.getSubtotal());
         dto.setDeliveryFee(order.getDeliveryFee());
         dto.setTax(order.getTax());
@@ -164,9 +153,21 @@ public class OrderService {
         dto.setCreatedAt(order.getCreatedAt());
         dto.setUpdatedAt(order.getUpdatedAt());
         
-        dto.setOrderItems(order.getOrderItems().stream()
-                .map(this::convertToOrderItemDto)
-                .collect(Collectors.toList()));
+        if (order.getUser() != null) {
+            dto.setUserId(order.getUser().getId());
+            dto.setUserName(order.getUser().getFirstName() + " " + order.getUser().getLastName());
+        }
+        
+        if (order.getRestaurant() != null) {
+            dto.setRestaurantId(order.getRestaurant().getId());
+            dto.setRestaurantName(order.getRestaurant().getName());
+        }
+        
+        if (order.getOrderItems() != null) {
+            dto.setOrderItems(order.getOrderItems().stream()
+                    .map(this::convertToOrderItemDto)
+                    .collect(Collectors.toList()));
+        }
         
         return dto;
     }
@@ -174,12 +175,16 @@ public class OrderService {
     private OrderDto.OrderItemDto convertToOrderItemDto(OrderItem orderItem) {
         OrderDto.OrderItemDto dto = new OrderDto.OrderItemDto();
         dto.setId(orderItem.getId());
-        dto.setMenuItemId(orderItem.getMenuItem().getId());
-        dto.setMenuItemName(orderItem.getMenuItem().getName());
         dto.setQuantity(orderItem.getQuantity());
         dto.setUnitPrice(orderItem.getUnitPrice());
         dto.setTotalPrice(orderItem.getTotalPrice());
         dto.setSpecialInstructions(orderItem.getSpecialInstructions());
+        
+        if (orderItem.getMenuItem() != null) {
+            dto.setMenuItemId(orderItem.getMenuItem().getId());
+            dto.setMenuItemName(orderItem.getMenuItem().getName());
+        }
+        
         return dto;
     }
 }

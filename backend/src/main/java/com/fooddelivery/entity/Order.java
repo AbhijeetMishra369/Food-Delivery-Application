@@ -19,7 +19,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(nullable = false, unique = true)
+    @Column(name = "order_number", unique = true, nullable = false)
     private String orderNumber;
     
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,24 +34,24 @@ public class Order {
     private List<OrderItem> orderItems;
     
     @Column(nullable = false)
-    private Double subtotal;
+    private double subtotal;
+    
+    @Column(name = "delivery_fee", nullable = false)
+    private double deliveryFee;
     
     @Column(nullable = false)
-    private Double deliveryFee;
+    private double tax;
     
     @Column(nullable = false)
-    private Double tax;
+    private double total;
     
-    @Column(nullable = false)
-    private Double total;
-    
-    @Column(nullable = false)
+    @Column(name = "delivery_address", nullable = false)
     private String deliveryAddress;
     
-    @Column(nullable = false)
+    @Column(name = "delivery_phone", nullable = false)
     private String deliveryPhone;
     
-    @Column(nullable = false)
+    @Column(name = "delivery_instructions")
     private String deliveryInstructions;
     
     @Enumerated(EnumType.STRING)
@@ -59,36 +59,42 @@ public class Order {
     private OrderStatus status = OrderStatus.PENDING;
     
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "payment_status", nullable = false)
     private PaymentStatus paymentStatus = PaymentStatus.PENDING;
     
-    @Column(nullable = false)
+    @Column(name = "payment_method", nullable = false)
     private String paymentMethod;
     
+    @Column(name = "payment_id")
     private String paymentId;
     
+    @Column(name = "order_time")
     private LocalDateTime orderTime;
     
+    @Column(name = "estimated_delivery_time")
     private LocalDateTime estimatedDeliveryTime;
     
+    @Column(name = "actual_delivery_time")
     private LocalDateTime actualDeliveryTime;
     
+    @Column(name = "delivery_person_name")
     private String deliveryPersonName;
     
+    @Column(name = "delivery_person_phone")
     private String deliveryPersonPhone;
     
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
     
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     
     @PrePersist
     protected void onCreate() {
-        orderTime = LocalDateTime.now();
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
-        if (orderNumber == null) {
-            orderNumber = "ORD" + System.currentTimeMillis();
-        }
+        orderTime = LocalDateTime.now();
+        estimatedDeliveryTime = LocalDateTime.now().plusMinutes(30);
     }
     
     @PreUpdate

@@ -1,108 +1,172 @@
 # 🍕 Food Delivery Application
 
-A comprehensive full-stack food delivery platform built with Spring Boot, React, and MySQL. Users can browse restaurants, order food, and track deliveries with integrated payment processing.
+A complete, full-stack food delivery application built with Spring Boot (Backend) and React (Frontend), featuring modern UI/UX, comprehensive functionality, and robust testing.
 
-## ✨ Features
+## 🚀 Features
+
+### 🔐 Authentication & Security
+- User registration and login with JWT tokens
+- Password encryption and validation
+- Role-based access control
+- Secure API endpoints
 
 ### 🏪 Restaurant Management
-- Browse restaurants with ratings, delivery times, and cuisine types
-- View detailed restaurant information and menus
-- Filter restaurants by cuisine, rating, and delivery time
+- Browse restaurants with search functionality
+- View restaurant details, ratings, and reviews
+- Filter restaurants by cuisine type
+- Real-time availability status
 
-### 🍽️ Menu & Ordering
-- Browse restaurant menus with detailed item information
-- Add items to cart with quantity selection
-- Real-time cart management
-- Special dietary indicators (vegetarian, spicy)
+### 🍽️ Menu & Ordering System
+- Browse menu items by category
+- Search menu items
+- Add items to cart with quantity management
+- Special instructions for orders
+- Restaurant-specific shopping cart
 
 ### 🛒 Shopping Cart
-- Add/remove items with quantity controls
-- Real-time total calculation
+- Add/remove items with real-time updates
+- Quantity management
 - Cart persistence across sessions
-- Restaurant-specific cart management
+- Restaurant-specific cart (one restaurant at a time)
 
 ### 📦 Order Management
-- Place orders with delivery information
-- Track order status in real-time
-- View order history
-- Detailed order information
+- Place orders with delivery details
+- Order confirmation with dialog
+- Order tracking with visual progress stepper
+- Order history and details
+- Payment integration (RazorPay)
 
-### 💳 Payment Integration
-- RazorPay payment gateway integration
-- Multiple payment methods
-- Secure payment processing
-- Payment status tracking
-
-### 🔐 User Authentication
-- User registration and login
-- JWT-based authentication
-- Role-based access control
-- Secure password handling
+### 🎨 Modern UI/UX
+- Responsive design for all screen sizes
+- Material-UI components
+- Intuitive navigation
+- Loading states and error handling
+- Form validation with real-time feedback
 
 ## 🛠️ Technology Stack
 
-### Backend
-- **Spring Boot 3.2.0** - Main framework
-- **Spring Security** - Authentication & authorization
-- **Spring Data JPA** - Database operations
-- **H2 Database** - In-memory database for development
-- **JWT** - Token-based authentication
-- **RazorPay** - Payment gateway integration
-- **Maven** - Dependency management
+### Backend (Spring Boot 3.2.0)
+- **Framework**: Spring Boot 3.2.0
+- **Security**: Spring Security with JWT
+- **Database**: H2 (in-memory for development)
+- **ORM**: Spring Data JPA with Hibernate
+- **Validation**: Bean Validation
+- **Payment**: RazorPay integration
+- **Build Tool**: Maven
 
-### Frontend
-- **React 18** - User interface
-- **Material-UI** - Component library
-- **Redux Toolkit** - State management
-- **React Router** - Navigation
-- **Axios** - HTTP client
+### Frontend (React 18)
+- **Framework**: React 18 with Hooks
+- **UI Library**: Material-UI (MUI)
+- **State Management**: Redux Toolkit
+- **Routing**: React Router DOM
+- **HTTP Client**: Axios
+- **Build Tool**: npm
+
+## 📁 Project Structure
+
+```
+food-delivery-app/
+├── backend/                          # Spring Boot Backend
+│   ├── src/main/java/com/fooddelivery/
+│   │   ├── config/                   # Configuration classes
+│   │   ├── controller/               # REST controllers
+│   │   ├── dto/                      # Data Transfer Objects
+│   │   ├── entity/                   # JPA entities
+│   │   ├── repository/               # Data repositories
+│   │   ├── security/                 # Security configuration
+│   │   └── service/                  # Business logic
+│   ├── src/main/resources/
+│   │   └── application.properties    # Application configuration
+│   └── pom.xml                       # Maven dependencies
+├── frontend/                         # React Frontend
+│   ├── src/
+│   │   ├── components/               # Reusable components
+│   │   ├── pages/                    # Page components
+│   │   ├── store/                    # Redux store and slices
+│   │   └── App.js                    # Main app component
+│   ├── package.json                  # npm dependencies
+│   └── public/                       # Static files
+├── test_complete_app.sh              # Comprehensive test script
+├── demo.sh                           # Demo and showcase script
+└── README.md                         # This file
+```
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Java 21+
-- Node.js 18+
-- Maven 3.6+
+- Java 21 or higher
+- Node.js 16 or higher
+- npm or yarn
 
-### Backend Setup
+### 1. Clone and Setup
 ```bash
-cd backend
-mvn clean compile
-mvn spring-boot:run
+# Navigate to the project directory
+cd food-delivery-app
+
+# Make scripts executable
+chmod +x test_complete_app.sh demo.sh
 ```
 
+### 2. Start Backend
+```bash
+cd backend
+mvn spring-boot:run
+```
 The backend will start on `http://localhost:8080`
 
-### Frontend Setup
+### 3. Start Frontend
 ```bash
 cd frontend
 npm install
 npm start
 ```
-
 The frontend will start on `http://localhost:3000`
+
+### 4. Run Tests
+```bash
+# Run comprehensive tests
+./test_complete_app.sh
+
+# Or run the demo
+./demo.sh
+```
+
+## 🧪 Testing
+
+### Automated Testing
+The application includes comprehensive test scripts:
+
+- **`test_complete_app.sh`**: Tests all backend API endpoints and frontend functionality
+- **`demo.sh`**: Provides a detailed demonstration and testing guide
+
+### Manual Testing
+1. Open `http://localhost:3000` in your browser
+2. Register a new account or login with test credentials
+3. Browse restaurants and add items to cart
+4. Place an order and track its status
+5. View order history and details
+
+### Test Credentials
+- **Email**: `user@example.com`
+- **Password**: `password`
 
 ## 📊 Sample Data
 
 The application comes with pre-loaded sample data:
 
-### Users
-- **Email:** user@example.com
-- **Password:** password
-
-### Restaurant
-- **Name:** Delicious Food Restaurant
-- **Cuisine:** American
-- **Rating:** 4.5/5
-- **Delivery Time:** 30 minutes
+### Restaurants
+- **Delicious Food Restaurant**
+  - Cuisine: International
+  - Rating: 4.5/5
+  - Delivery Time: 30-45 minutes
 
 ### Menu Items
-- Chicken Wings ($12.99)
-- Grilled Chicken ($15.99)
-- Chocolate Cake ($8.99)
-- Caesar Salad ($10.99)
+- **Appetizers**: Chicken Wings, Caesar Salad
+- **Main Courses**: Grilled Chicken, Beef Burger
+- **Desserts**: Chocolate Cake, Ice Cream
+- **Beverages**: Soft Drinks, Coffee
 
-## 🔌 API Endpoints
+## 🔗 API Endpoints
 
 ### Authentication
 - `POST /api/auth/register` - User registration
@@ -112,103 +176,184 @@ The application comes with pre-loaded sample data:
 - `GET /api/restaurants` - List all restaurants
 - `GET /api/restaurants/{id}` - Get restaurant details
 - `GET /api/restaurants/search?q={query}` - Search restaurants
-- `GET /api/restaurants/cuisine/{cuisine}` - Filter by cuisine
 
 ### Menu Items
-- `GET /api/menu-items/restaurant/{restaurantId}` - Get restaurant menu
-- `GET /api/menu-items/{id}` - Get menu item details
+- `GET /api/menu-items/restaurant/{id}` - Get restaurant menu
+- `GET /api/menu-items/category/{categoryId}` - Get items by category
+- `GET /api/categories` - List all categories
 
 ### Orders
 - `POST /api/orders` - Create new order
 - `GET /api/orders/user` - Get user orders
 - `GET /api/orders/{id}` - Get order details
 
-### Payments
-- `POST /api/payments/create-order/{orderId}` - Create payment order
-- `POST /api/payments/verify` - Verify payment
+## 🎯 Key Features
 
-## 🏗️ Project Structure
+### Backend Features
+- ✅ RESTful API design
+- ✅ JWT authentication
+- ✅ Spring Security
+- ✅ H2 in-memory database
+- ✅ JPA/Hibernate ORM
+- ✅ Input validation
+- ✅ CORS configuration
+- ✅ RazorPay payment integration
+- ✅ Sample data initialization
 
-```
-food-delivery/
-├── backend/
-│   ├── src/main/java/com/fooddelivery/
-│   │   ├── entity/          # JPA entities
-│   │   ├── repository/      # Data access layer
-│   │   ├── service/         # Business logic
-│   │   ├── controller/      # REST controllers
-│   │   ├── dto/            # Data transfer objects
-│   │   ├── config/         # Configuration classes
-│   │   └── security/       # Security configuration
-│   └── src/main/resources/
-│       └── application.properties
-├── frontend/
-│   ├── src/
-│   │   ├── components/     # Reusable components
-│   │   ├── pages/          # Page components
-│   │   ├── store/          # Redux store and slices
-│   │   └── App.js          # Main application
-│   └── package.json
-└── README.md
-```
+### Frontend Features
+- ✅ Modern React 18 with hooks
+- ✅ Material-UI components
+- ✅ Redux Toolkit for state management
+- ✅ React Router for navigation
+- ✅ Axios for API calls
+- ✅ Responsive design
+- ✅ Form validation
+- ✅ Loading states and error handling
 
-## 🧪 Testing
-
-Run the comprehensive test suite:
-
-```bash
-chmod +x test_complete_app.sh
-./test_complete_app.sh
-```
-
-This will test:
-- Backend API connectivity
-- Authentication endpoints
-- Restaurant and menu data
-- Frontend accessibility
-
-## 🎯 Key Features Demonstrated
-
-1. **Full-Stack Integration** - Complete backend-frontend communication
-2. **Real-time State Management** - Redux for cart and user state
-3. **Responsive Design** - Material-UI components for all screen sizes
-4. **Security** - JWT authentication and role-based access
-5. **Database Integration** - H2 with sample data
-6. **Payment Processing** - RazorPay integration ready
-7. **Order Tracking** - Complete order lifecycle management
+### Database Schema
+- ✅ Users (authentication & profiles)
+- ✅ Restaurants (details & ratings)
+- ✅ Categories (menu organization)
+- ✅ Menu Items (food items & prices)
+- ✅ Orders (order management)
+- ✅ Order Items (order details)
+- ✅ Payments (payment tracking)
 
 ## 🔧 Configuration
 
-### Backend Configuration
-Edit `backend/src/main/resources/application.properties`:
-- Database connection settings
-- JWT secret and expiration
-- RazorPay API keys
-- CORS configuration
+### Backend Configuration (`application.properties`)
+```properties
+# Database
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driverClassName=org.h2.Driver
+spring.h2.console.enabled=true
+
+# JPA
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.show-sql=true
+
+# Security
+jwt.secret=your-secret-key
+jwt.expiration=86400000
+
+# CORS
+spring.web.cors.allowed-origins=http://localhost:3000
+```
 
 ### Frontend Configuration
-Edit API base URL in Redux slices:
-- Default: `http://localhost:8080/api`
-- Update for production deployment
+- API base URL: `http://localhost:8080/api`
+- Proxy configuration in `package.json`
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+1. **Backend won't start**
+   - Check if port 8080 is available
+   - Ensure Java 21+ is installed
+   - Check Maven dependencies
+
+2. **Frontend won't start**
+   - Check if port 3000 is available
+   - Ensure Node.js 16+ is installed
+   - Run `npm install` to install dependencies
+
+3. **CORS errors**
+   - Ensure backend is running on port 8080
+   - Check CORS configuration in `application.properties`
+
+4. **Database issues**
+   - H2 console available at `http://localhost:8080/h2-console`
+   - Database resets on application restart
+
+### Debug Mode
+```bash
+# Backend with debug logging
+cd backend
+mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Dlogging.level.com.fooddelivery=DEBUG"
+
+# Frontend with debug mode
+cd frontend
+npm start
+```
+
+## 📈 Performance
+
+### Backend Performance
+- H2 in-memory database for fast development
+- JPA/Hibernate for efficient data access
+- JWT tokens for stateless authentication
+- Optimized queries with proper indexing
+
+### Frontend Performance
+- React 18 with concurrent features
+- Redux Toolkit for efficient state management
+- Material-UI for optimized rendering
+- Lazy loading and code splitting ready
+
+## 🔒 Security
+
+### Authentication
+- JWT-based authentication
+- Password encryption with BCrypt
+- Token expiration and refresh
+- Role-based access control
+
+### API Security
+- Spring Security configuration
+- CORS protection
+- Input validation and sanitization
+- SQL injection prevention
 
 ## 🚀 Deployment
 
 ### Backend Deployment
-1. Build the JAR: `mvn clean package`
-2. Run: `java -jar target/food-delivery-backend-1.0.0.jar`
+```bash
+# Build JAR file
+cd backend
+mvn clean package
+
+# Run JAR file
+java -jar target/food-delivery-0.0.1-SNAPSHOT.jar
+```
 
 ### Frontend Deployment
-1. Build: `npm run build`
-2. Deploy the `build` folder to your web server
+```bash
+# Build production files
+cd frontend
+npm run build
 
-## 📝 License
-
-This project is for educational purposes and demonstrates full-stack development with modern technologies.
+# Serve static files
+npx serve -s build
+```
 
 ## 🤝 Contributing
 
-Feel free to submit issues and enhancement requests!
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🙏 Acknowledgments
+
+- Spring Boot team for the excellent framework
+- React team for the amazing frontend library
+- Material-UI team for the beautiful components
+- Redux Toolkit team for the state management solution
+
+## 📞 Support
+
+For support and questions:
+- Check the troubleshooting section
+- Review the API documentation
+- Run the test scripts for verification
+- Check the demo script for usage examples
 
 ---
 
-**🎉 The Food Delivery Application is now fully functional and ready for use!**
+**🎉 Enjoy your Food Delivery Application!**
