@@ -4,6 +4,8 @@ import com.fooddelivery.dto.OrderDto;
 import com.fooddelivery.dto.OrderRequest;
 import com.fooddelivery.entity.*;
 import com.fooddelivery.repository.OrderRepository;
+import com.fooddelivery.repository.RestaurantRepository;
+import com.fooddelivery.repository.MenuItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,11 +24,15 @@ public class OrderService {
     private final UserService userService;
     private final RestaurantService restaurantService;
     private final MenuItemService menuItemService;
+    private final RestaurantRepository restaurantRepository;
+    private final MenuItemRepository menuItemRepository;
     
     @Transactional
     public OrderDto createOrder(OrderRequest request, Long userId) {
         User user = userService.getUserById(userId);
-        Restaurant restaurant = restaurantService.getRestaurantById(request.getRestaurantId());
+        // Get restaurant entity directly
+        Restaurant restaurant = restaurantRepository.findById(request.getRestaurantId())
+                .orElseThrow(() -> new RuntimeException("Restaurant not found"));
         
         Order order = new Order();
         order.setUser(user);
@@ -41,7 +47,9 @@ public class OrderService {
         double subtotal = 0.0;
         List<OrderItem> orderItems = request.getItems().stream()
                 .map(itemRequest -> {
-                    MenuItem menuItem = menuItemService.getMenuItemById(itemRequest.getMenuItemId());
+                    // Get menu item entity directly
+                    MenuItem menuItem = menuItemRepository.findById(itemRequest.getMenuItemId())
+                            .orElseThrow(() -> new RuntimeException("Menu item not found"));
                     OrderItem orderItem = new OrderItem();
                     orderItem.setOrder(order);
                     orderItem.setMenuItem(menuItem);
