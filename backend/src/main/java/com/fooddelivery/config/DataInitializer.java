@@ -30,8 +30,9 @@ public class DataInitializer implements CommandLineRunner {
     
     @Override
     public void run(String... args) throws Exception {
-        if (userRepository.count() == 0) {
-            log.info("Initializing sample data...");
+        try {
+            if (userRepository.count() == 0) {
+                log.info("Initializing sample data...");
             
             // Create Users
             User adminUser = new User();
@@ -158,7 +159,12 @@ public class DataInitializer implements CommandLineRunner {
             
             menuItemRepository.saveAll(Arrays.asList(item1, item2, item3, item4));
             
-            log.info("Sample data initialized successfully!");
+                log.info("Sample data initialized successfully!");
+            } else {
+                log.info("Sample data already exists, skipping initialization.");
+            }
+        } catch (Exception e) {
+            log.error("Error initializing sample data: {}", e.getMessage());
         }
     }
 }

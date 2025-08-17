@@ -6,6 +6,7 @@ import com.fooddelivery.entity.*;
 import com.fooddelivery.repository.MenuItemRepository;
 import com.fooddelivery.repository.OrderRepository;
 import com.fooddelivery.repository.RestaurantRepository;
+import com.fooddelivery.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,9 +24,14 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final RestaurantRepository restaurantRepository;
     private final MenuItemRepository menuItemRepository;
+    private final UserRepository userRepository;
     
     @Transactional
     public OrderDto createOrder(OrderRequest request, Long userId) {
+        // Get user
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        
         // Get restaurant
         Restaurant restaurant = restaurantRepository.findById(request.getRestaurantId())
                 .orElseThrow(() -> new RuntimeException("Restaurant not found"));
@@ -33,6 +39,7 @@ public class OrderService {
         // Create order
         Order order = new Order();
         order.setOrderNumber("ORD" + System.currentTimeMillis());
+        order.setUser(user);
         order.setRestaurant(restaurant);
         order.setDeliveryAddress(request.getDeliveryAddress());
         order.setDeliveryPhone(request.getDeliveryPhone());
@@ -40,14 +47,13 @@ public class OrderService {
         order.setPaymentMethod(request.getPaymentMethod());
         order.setStatus(Order.OrderStatus.PENDING);
         order.setPaymentStatus(Order.PaymentStatus.PENDING);
+        order.setOrderTime(LocalDateTime.now());
+        order.setEstimatedDeliveryTime(LocalDateTime.now().plusMinutes(restaurant.getDeliveryTime()));
         
         // Calculate totals
-        double subtotal = 0.0;
-        double deliveryFee = restaurant.getDeliveryFee();
-        double tax = 0.0; // 10% tax
-        double total = 0.0;
+        final double deliveryFee = restaurant.getDeliveryFee();
         
-        // Create order items
+        // Create order items and calculate subtotal
         List<OrderItem> orderItems = request.getItems().stream()
                 .map(itemRequest -> {
                     MenuItem menuItem = menuItemRepository.findById(itemRequest.getMenuItemId())
@@ -61,13 +67,16 @@ public class OrderService {
                     orderItem.setTotalPrice(menuItem.getPrice() * itemRequest.getQuantity());
                     orderItem.setSpecialInstructions(itemRequest.getSpecialInstructions());
                     
-                    subtotal += orderItem.getTotalPrice();
                     return orderItem;
                 })
                 .collect(Collectors.toList());
         
-        tax = subtotal * 0.10; // 10% tax
-        total = subtotal + deliveryFee + tax;
+        // Calculate totals
+        double subtotal = orderItems.stream()
+                .mapToDouble(OrderItem::getTotalPrice)
+                .sum();
+        double tax = subtotal * 0.10; // 10% tax
+        double total = subtotal + deliveryFee + tax;
         
         order.setSubtotal(subtotal);
         order.setDeliveryFee(deliveryFee);

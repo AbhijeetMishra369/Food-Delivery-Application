@@ -48,7 +48,7 @@ A complete, full-stack food delivery application built with Spring Boot (Backend
 ### Backend (Spring Boot 3.2.0)
 - **Framework**: Spring Boot 3.2.0
 - **Security**: Spring Security with JWT
-- **Database**: H2 (in-memory for development)
+- **Database**: MySQL 8.0
 - **ORM**: Spring Data JPA with Hibernate
 - **Validation**: Bean Validation
 - **Payment**: RazorPay integration
@@ -97,6 +97,7 @@ food-delivery-app/
 - Java 21 or higher
 - Node.js 16 or higher
 - npm or yarn
+- MySQL 8.0 or higher
 
 ### 1. Clone and Setup
 ```bash
@@ -107,14 +108,27 @@ cd food-delivery-app
 chmod +x test_complete_app.sh demo.sh
 ```
 
-### 2. Start Backend
+### 2. Setup MySQL Database
+```bash
+# Start MySQL service
+sudo systemctl start mysql
+
+# Create database (optional - will be created automatically)
+mysql -u root -p < setup_mysql.sql
+
+# Or manually create database
+mysql -u root -p
+CREATE DATABASE food_delivery;
+```
+
+### 3. Start Backend
 ```bash
 cd backend
 mvn spring-boot:run
 ```
 The backend will start on `http://localhost:8080`
 
-### 3. Start Frontend
+### 4. Start Frontend
 ```bash
 cd frontend
 npm install
@@ -122,7 +136,7 @@ npm start
 ```
 The frontend will start on `http://localhost:3000`
 
-### 4. Run Tests
+### 5. Run Tests
 ```bash
 # Run comprehensive tests
 ./test_complete_app.sh
@@ -224,12 +238,13 @@ The application comes with pre-loaded sample data:
 ### Backend Configuration (`application.properties`)
 ```properties
 # Database
-spring.datasource.url=jdbc:h2:mem:testdb
-spring.datasource.driverClassName=org.h2.Driver
-spring.h2.console.enabled=true
+spring.datasource.url=jdbc:mysql://localhost:3306/food_delivery?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+spring.datasource.driverClassName=com.mysql.cj.jdbc.Driver
+spring.datasource.username=root
+spring.datasource.password=password
 
 # JPA
-spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 
 # Security
@@ -263,8 +278,9 @@ spring.web.cors.allowed-origins=http://localhost:3000
    - Check CORS configuration in `application.properties`
 
 4. **Database issues**
-   - H2 console available at `http://localhost:8080/h2-console`
-   - Database resets on application restart
+   - Ensure MySQL is running: `sudo systemctl status mysql`
+   - Check database connection: `mysql -u root -p -e "USE food_delivery; SHOW TABLES;"`
+   - Database persists data between restarts
 
 ### Debug Mode
 ```bash

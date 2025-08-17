@@ -173,13 +173,14 @@ fi
 echo -e "\n${BLUE}3. Database Testing${NC}"
 echo "---------------------"
 
-# Test 10: Test H2 console access
-echo "Testing H2 database console..."
-H2_RESPONSE=$(curl -s -I http://localhost:8080/api/h2-console | head -1)
-if echo "$H2_RESPONSE" | grep -q "200\|302"; then
-    print_test_result 0 "H2 database console accessible"
+# Test 10: Test MySQL database connectivity
+echo "Testing MySQL database connectivity..."
+DB_TEST=$(curl -s http://localhost:8080/api/restaurants | grep -o '"id"' | wc -l)
+if [ "$DB_TEST" -gt 0 ]; then
+    print_test_result 0 "MySQL database connected and accessible"
+    echo "   Found $DB_TEST restaurants in database"
 else
-    print_test_result 1 "H2 database console not accessible"
+    print_test_result 1 "MySQL database connection failed"
 fi
 
 echo -e "\n${BLUE}4. Application Features Summary${NC}"

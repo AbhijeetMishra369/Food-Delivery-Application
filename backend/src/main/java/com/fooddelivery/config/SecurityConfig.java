@@ -34,7 +34,6 @@ public class SecurityConfig {
                 .requestMatchers("/restaurants/**").permitAll()
                 .requestMatchers("/categories/**").permitAll()
                 .requestMatchers("/menu-items/**").permitAll()
-                .requestMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated()
             .and()
                 .sessionManagement()
@@ -43,8 +42,8 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         
-        // Allow H2 console frame
-        http.headers().frameOptions().disable();
+        // Configure headers for security
+        http.headers().frameOptions().sameOrigin();
         
         return http.build();
     }

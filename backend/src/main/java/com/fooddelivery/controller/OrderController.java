@@ -3,6 +3,7 @@ package com.fooddelivery.controller;
 import com.fooddelivery.dto.OrderDto;
 import com.fooddelivery.dto.OrderRequest;
 import com.fooddelivery.entity.Order;
+import com.fooddelivery.repository.UserRepository;
 import com.fooddelivery.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,12 +22,11 @@ import java.util.List;
 public class OrderController {
     
     private final OrderService orderService;
+    private final UserRepository userRepository;
     
     @PostMapping
     public ResponseEntity<OrderDto> createOrder(@Valid @RequestBody OrderRequest request, Authentication authentication) {
-        // In a real application, you would get the user ID from the authentication
-        // For now, we'll use a default user ID
-        Long userId = 1L; // This should come from the authenticated user
+        Long userId = getCurrentUserId(authentication);
         OrderDto order = orderService.createOrder(request, userId);
         return ResponseEntity.ok(order);
     }
@@ -38,17 +38,15 @@ public class OrderController {
     }
     
     @GetMapping("/user")
-    public ResponseEntity<List<OrderDto>> getUserOrders() {
-        // In a real application, you would get the user ID from the authentication
-        Long userId = 1L; // This should come from the authenticated user
+    public ResponseEntity<List<OrderDto>> getUserOrders(Authentication authentication) {
+        Long userId = getCurrentUserId(authentication);
         List<OrderDto> orders = orderService.getUserOrders(userId);
         return ResponseEntity.ok(orders);
     }
     
     @GetMapping("/user/page")
-    public ResponseEntity<Page<OrderDto>> getUserOrdersPaginated(Pageable pageable) {
-        // In a real application, you would get the user ID from the authentication
-        Long userId = 1L; // This should come from the authenticated user
+    public ResponseEntity<Page<OrderDto>> getUserOrdersPaginated(Pageable pageable, Authentication authentication) {
+        Long userId = getCurrentUserId(authentication);
         Page<OrderDto> orders = orderService.getUserOrders(userId, pageable);
         return ResponseEntity.ok(orders);
     }
@@ -73,5 +71,16 @@ public class OrderController {
             @RequestParam Order.PaymentStatus paymentStatus) {
         OrderDto order = orderService.updateOrderPaymentStatus(id, paymentStatus);
         return ResponseEntity.ok(order);
+    }
+    
+    private Long getCurrentUserId(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("User not authenticated");
+        }
+        
+        String email = authentication.getName();
+        return userRepository.findByEmail(email)
+                .map(user -> user.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }
