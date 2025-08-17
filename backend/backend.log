@@ -1,0 +1,64 @@
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m---------------< [0;36mcom.fooddelivery:food-delivery-backend[0;1m >---------------[m
+[[1;34mINFO[m] [1mBuilding Food Delivery Backend 1.0.0[m
+[[1;34mINFO[m]   from pom.xml
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m>>> [0;32mspring-boot:3.2.0:run[m [1m(default-cli)[0;1m > [0;1mtest-compile[m @ [36mfood-delivery-backend[0;1m >>>[m
+[[1;33mWARNING[m] The artifact mysql:mysql-connector-java:jar:8.0.33 has been relocated to com.mysql:mysql-connector-j:jar:8.0.33: MySQL Connector/J artifacts moved to reverse-DNS compliant Maven 2+ coordinates.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mresources:3.3.1:resources[m [1m(default-resources)[m @ [36mfood-delivery-backend[0;1m ---[m
+[[1;34mINFO[m] Copying 1 resource from src/main/resources to target/classes
+[[1;34mINFO[m] Copying 0 resource from src/main/resources to target/classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mcompiler:3.11.0:compile[m [1m(default-compile)[m @ [36mfood-delivery-backend[0;1m ---[m
+[[1;34mINFO[m] Changes detected - recompiling the module! :source
+[[1;34mINFO[m] Compiling 41 source files with javac [debug release 21] to target/classes
+[[1;34mINFO[m] Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+[[1;34mINFO[m] -------------------------------------------------------------
+[[1;33mWARNING[m] COMPILATION WARNING : 
+[[1;34mINFO[m] -------------------------------------------------------------
+[[1;33mWARNING[m] /workspace/backend/src/main/java/com/fooddelivery/config/SecurityConfig.java:[30,13] cors() in org.springframework.security.config.annotation.web.builders.HttpSecurity has been deprecated and marked for removal
+[[1;33mWARNING[m] /workspace/backend/src/main/java/com/fooddelivery/config/SecurityConfig.java:[30,20] and() in org.springframework.security.config.annotation.SecurityConfigurerAdapter has been deprecated and marked for removal
+[[1;33mWARNING[m] /workspace/backend/src/main/java/com/fooddelivery/config/SecurityConfig.java:[31,13] csrf() in org.springframework.security.config.annotation.web.builders.HttpSecurity has been deprecated and marked for removal
+[[1;33mWARNING[m] /workspace/backend/src/main/java/com/fooddelivery/config/SecurityConfig.java:[32,13] authorizeHttpRequests() in org.springframework.security.config.annotation.web.builders.HttpSecurity has been deprecated and marked for removal
+[[1;33mWARNING[m] /workspace/backend/src/main/java/com/fooddelivery/config/SecurityConfig.java:[38,13] and() in org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer.AuthorizationManagerRequestMatcherRegistry has been deprecated and marked for removal
+[[1;33mWARNING[m] /workspace/backend/src/main/java/com/fooddelivery/config/SecurityConfig.java:[39,17] sessionManagement() in org.springframework.security.config.annotation.web.builders.HttpSecurity has been deprecated and marked for removal
+[[1;33mWARNING[m] /workspace/backend/src/main/java/com/fooddelivery/config/SecurityConfig.java:[41,13] and() in org.springframework.security.config.annotation.SecurityConfigurerAdapter has been deprecated and marked for removal
+[[1;33mWARNING[m] /workspace/backend/src/main/java/com/fooddelivery/config/SecurityConfig.java:[46,13] headers() in org.springframework.security.config.annotation.web.builders.HttpSecurity has been deprecated and marked for removal
+[[1;33mWARNING[m] /workspace/backend/src/main/java/com/fooddelivery/config/SecurityConfig.java:[46,23] frameOptions() in org.springframework.security.config.annotation.web.configurers.HeadersConfigurer has been deprecated and marked for removal
+[[1;34mINFO[m] 9 warnings 
+[[1;34mINFO[m] -------------------------------------------------------------
+[[1;34mINFO[m] -------------------------------------------------------------
+[[1;31mERROR[m] COMPILATION ERROR : 
+[[1;34mINFO[m] -------------------------------------------------------------
+[[1;31mERROR[m] /workspace/backend/src/main/java/com/fooddelivery/service/CategoryService.java:[19,34] cannot find symbol
+  symbol:   method findByIsActiveTrue()
+  location: variable categoryRepository of type com.fooddelivery.repository.CategoryRepository
+[[1;34mINFO[m] 1 error
+[[1;34mINFO[m] -------------------------------------------------------------
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;31mBUILD FAILURE[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  2.029 s
+[[1;34mINFO[m] Finished at: 2025-08-17T10:52:37Z
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;31mERROR[m] Failed to execute goal [32morg.apache.maven.plugins:maven-compiler-plugin:3.11.0:compile[m [1m(default-compile)[m on project [36mfood-delivery-backend[m: [1;31mCompilation failure[m
+[[1;31mERROR[m] [1;31m/workspace/backend/src/main/java/com/fooddelivery/service/CategoryService.java:[19,34] cannot find symbol[m
+[[1;31mERROR[m] [1;31m  symbol:   method findByIsActiveTrue()[m
+[[1;31mERROR[m] [1;31m  location: variable categoryRepository of type com.fooddelivery.repository.CategoryRepository[m
+[[1;31mERROR[m] [1;31m[m
+[[1;31mERROR[m] -> [1m[Help 1][m
+[[1;31mERROR[m] 
+[[1;31mERROR[m] To see the full stack trace of the errors, re-run Maven with the [1m-e[m switch.
+[[1;31mERROR[m] Re-run Maven using the [1m-X[m switch to enable full debug logging.
+[[1;31mERROR[m] 
+[[1;31mERROR[m] For more information about the errors and possible solutions, please read the following articles:
+[[1;31mERROR[m] [1m[Help 1][m http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

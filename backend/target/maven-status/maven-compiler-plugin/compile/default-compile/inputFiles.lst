@@ -14,11 +14,13 @@
 /workspace/backend/src/main/java/com/fooddelivery/controller/MenuItemController.java
 /workspace/backend/src/main/java/com/fooddelivery/config/DataInitializer.java
 /workspace/backend/src/main/java/com/fooddelivery/entity/Order.java
+/workspace/backend/src/main/java/com/fooddelivery/dto/CategoryDto.java
 /workspace/backend/src/main/java/com/fooddelivery/service/UserService.java
 /workspace/backend/src/main/java/com/fooddelivery/entity/Restaurant.java
 /workspace/backend/src/main/java/com/fooddelivery/config/SecurityConfig.java
 /workspace/backend/src/main/java/com/fooddelivery/repository/PaymentRepository.java
 /workspace/backend/src/main/java/com/fooddelivery/service/RestaurantService.java
+/workspace/backend/src/main/java/com/fooddelivery/service/CategoryService.java
 /workspace/backend/src/main/java/com/fooddelivery/dto/OrderRequest.java
 /workspace/backend/src/main/java/com/fooddelivery/service/PaymentService.java
 /workspace/backend/src/main/java/com/fooddelivery/dto/AuthRequest.java
@@ -33,6 +35,7 @@
 /workspace/backend/src/main/java/com/fooddelivery/config/ApplicationConfig.java
 /workspace/backend/src/main/java/com/fooddelivery/entity/User.java
 /workspace/backend/src/main/java/com/fooddelivery/FoodDeliveryApplication.java
+/workspace/backend/src/main/java/com/fooddelivery/controller/CategoryController.java
 /workspace/backend/src/main/java/com/fooddelivery/controller/OrderController.java
 /workspace/backend/src/main/java/com/fooddelivery/repository/CategoryRepository.java
 /workspace/backend/src/main/java/com/fooddelivery/security/JwtUtil.java

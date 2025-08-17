@@ -3,6 +3,7 @@ package com.fooddelivery.controller;
 import com.fooddelivery.dto.OrderDto;
 import com.fooddelivery.dto.OrderRequest;
 import com.fooddelivery.entity.Order;
+import com.fooddelivery.entity.User;
 import com.fooddelivery.repository.UserRepository;
 import com.fooddelivery.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -80,7 +81,7 @@ public class OrderController {
         
         String email = authentication.getName();
         return userRepository.findByEmail(email)
-                .map(user -> user.getId())
+                .map(User::getId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }

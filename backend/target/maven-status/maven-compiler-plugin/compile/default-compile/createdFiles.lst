@@ -9,8 +9,6 @@ com/fooddelivery/controller/MenuItemController.class
 com/fooddelivery/controller/PaymentController.class
 com/fooddelivery/service/PaymentService.class
 com/fooddelivery/config/DataInitializer.class
-com/fooddelivery/config/ApplicationConfig.class
-com/fooddelivery/controller/OrderController.class
 com/fooddelivery/controller/RestaurantController.class
 com/fooddelivery/entity/MenuItem.class
 com/fooddelivery/dto/PaymentRequest.class
@@ -21,13 +19,13 @@ com/fooddelivery/controller/AuthController.class
 com/fooddelivery/dto/OrderRequest$OrderItemRequest.class
 com/fooddelivery/dto/RegisterRequest.class
 com/fooddelivery/dto/MenuItemDto.class
+com/fooddelivery/dto/CategoryDto.class
 com/fooddelivery/repository/MenuItemRepository.class
 com/fooddelivery/entity/Category.class
 com/fooddelivery/entity/OrderItem.class
 com/fooddelivery/entity/Order$OrderStatus.class
 com/fooddelivery/service/OrderService.class
 com/fooddelivery/entity/User$UserRole.class
-com/fooddelivery/FoodDeliveryApplication.class
 com/fooddelivery/dto/AuthResponse.class
 com/fooddelivery/config/SecurityConfig.class
 com/fooddelivery/dto/OrderRequest.class
