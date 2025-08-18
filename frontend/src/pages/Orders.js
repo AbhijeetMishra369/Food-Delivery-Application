@@ -131,7 +131,7 @@ const Orders = () => {
                     
                     <Box sx={{ textAlign: 'right' }}>
                       <Typography variant="h6" color="primary">
-                        ${order.total.toFixed(2)}
+                        ₹{order.total.toFixed(2)}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
                         {formatDate(order.createdAt)}
@@ -177,7 +177,7 @@ const Orders = () => {
                           {item.menuItemName} x{item.quantity}
                         </Typography>
                         <Typography variant="body2">
-                          ${item.totalPrice.toFixed(2)}
+                          ₹{item.totalPrice.toFixed(2)}
                         </Typography>
                       </Box>
                     ))}

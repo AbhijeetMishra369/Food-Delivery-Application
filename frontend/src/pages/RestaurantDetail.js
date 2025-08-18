@@ -1,4 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -125,12 +129,29 @@ const RestaurantDetail = () => {
     <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* Restaurant Header */}
       <Card sx={{ mb: 4 }}>
-        <CardMedia
-          component="img"
-          height="300"
-          image={currentRestaurant.imageUrl || 'https://via.placeholder.com/800x300?text=Restaurant'}
-          alt={currentRestaurant.name}
-        />
+        <Box sx={{ borderTopLeftRadius: 12, borderTopRightRadius: 12, overflow: 'hidden' }}>
+          <Swiper
+            modules={[Autoplay, Pagination]}
+            autoplay={{ delay: 2500, disableOnInteraction: false }}
+            pagination={{ clickable: true }}
+            loop
+          >
+            {[
+              currentRestaurant.imageUrl || 'https://via.placeholder.com/800x300?text=Restaurant',
+              'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1600&auto=format&fit=crop',
+              'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?q=80&w=1600&auto=format&fit=crop',
+            ].map((src, idx) => (
+              <SwiperSlide key={idx}>
+                <Box
+                  component="img"
+                  src={src}
+                  alt={currentRestaurant.name}
+                  sx={{ width: '100%', height: 300, objectFit: 'cover' }}
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </Box>
         <CardContent>
           <Typography variant="h4" component="h1" gutterBottom>
             {currentRestaurant.name}
@@ -158,7 +179,7 @@ const RestaurantDetail = () => {
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <DeliveryIcon sx={{ fontSize: 16, mr: 0.5, color: 'text.secondary' }} />
               <Typography variant="body2" color="text.secondary">
-                ${currentRestaurant.deliveryFee} delivery fee
+                ₹{currentRestaurant.deliveryFee} delivery fee
               </Typography>
             </Box>
           </Box>
@@ -231,7 +252,7 @@ const RestaurantDetail = () => {
                     </Typography>
 
                     <Typography variant="h6" color="primary" sx={{ mb: 2 }}>
-                      ${item.price}
+                      ₹{item.price}
                     </Typography>
 
                     <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>

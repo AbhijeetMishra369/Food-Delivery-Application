@@ -146,7 +146,7 @@ const OrderDetail = () => {
                 
                 <Box sx={{ textAlign: 'right' }}>
                   <Typography variant="h5" color="primary">
-                    ${currentOrder.total.toFixed(2)}
+                    ₹{currentOrder.total.toFixed(2)}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     {formatDate(currentOrder.createdAt)}
@@ -205,7 +205,7 @@ const OrderDetail = () => {
                       )}
                     </Box>
                     <Typography variant="body1">
-                      ${item.totalPrice.toFixed(2)}
+                      ₹{item.totalPrice.toFixed(2)}
                     </Typography>
                   </Box>
                 ))}
@@ -220,20 +220,20 @@ const OrderDetail = () => {
                 </Typography>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography>Subtotal:</Typography>
-                  <Typography>${currentOrder.subtotal.toFixed(2)}</Typography>
+                  <Typography>₹{currentOrder.subtotal.toFixed(2)}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography>Delivery Fee:</Typography>
-                  <Typography>${currentOrder.deliveryFee.toFixed(2)}</Typography>
+                  <Typography>₹{currentOrder.deliveryFee.toFixed(2)}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography>Tax:</Typography>
-                  <Typography>${currentOrder.tax.toFixed(2)}</Typography>
+                  <Typography>₹{currentOrder.tax.toFixed(2)}</Typography>
                 </Box>
                 <Divider sx={{ my: 1 }} />
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Typography variant="h6">Total:</Typography>
-                  <Typography variant="h6">${currentOrder.total.toFixed(2)}</Typography>
+                  <Typography variant="h6">₹{currentOrder.total.toFixed(2)}</Typography>
                 </Box>
               </Box>
             </CardContent>

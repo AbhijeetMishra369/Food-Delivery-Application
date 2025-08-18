@@ -138,7 +138,7 @@ const Cart = () => {
                     <Grid item xs={6}>
                       <Typography variant="h6">{item.name}</Typography>
                       <Typography variant="body2" color="text.secondary">
-                        ${item.price} each
+                        ₹{item.price} each
                       </Typography>
                     </Grid>
                     
@@ -164,7 +164,7 @@ const Cart = () => {
                       </Box>
                       
                       <Typography variant="h6" color="primary" sx={{ mt: 1 }}>
-                        ${(item.price * item.quantity).toFixed(2)}
+                        ₹{(item.price * item.quantity).toFixed(2)}
                       </Typography>
                     </Grid>
                   </Grid>
@@ -223,20 +223,20 @@ const Cart = () => {
 
               <Box sx={{ mb: 2 }}>
                 <Typography variant="body1">
-                  Subtotal: ${total.toFixed(2)}
+                  Subtotal: ₹{total.toFixed(2)}
                 </Typography>
                 <Typography variant="body1">
-                  Delivery Fee: $5.00
+                  Delivery Fee: ₹5.00
                 </Typography>
                 <Typography variant="body1">
-                  Tax: ${(total * 0.1).toFixed(2)}
+                  Tax: ₹{(total * 0.1).toFixed(2)}
                 </Typography>
               </Box>
 
               <Divider sx={{ my: 2 }} />
 
               <Typography variant="h6" color="primary">
-                Total: ${(total + 5 + total * 0.1).toFixed(2)}
+                Total: ₹{(total + 5 + total * 0.1).toFixed(2)}
               </Typography>
 
               <Button
@@ -276,7 +276,7 @@ const Cart = () => {
               <strong>Phone:</strong> {deliveryPhone}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              <strong>Total:</strong> ${(total + 5 + total * 0.1).toFixed(2)}
+              <strong>Total:</strong> ₹{(total + 5 + total * 0.1).toFixed(2)}
             </Typography>
           </Box>
         </DialogContent>

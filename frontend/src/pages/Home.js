@@ -24,6 +24,10 @@ import {
   LocalShipping as DeliveryIcon,
 } from '@mui/icons-material';
 import { fetchRestaurants, searchRestaurants } from '../store/slices/restaurantSlice';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -58,13 +62,57 @@ const Home = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom align="center">
-        Discover Amazing Restaurants
-      </Typography>
-      
-      <Typography variant="body1" color="text.secondary" align="center" sx={{ mb: 4 }}>
-        Order delicious food from the best restaurants in your area
-      </Typography>
+      <Box sx={{ mb: 4 }}>
+        <Swiper
+          modules={[Autoplay, Pagination]}
+          autoplay={{ delay: 2500, disableOnInteraction: false }}
+          pagination={{ clickable: true }}
+          loop
+          style={{ borderRadius: 12, overflow: 'hidden' }}
+        >
+          {[
+            'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?q=80&w=1600&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1600&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1600&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1600&auto=format&fit=crop',
+          ].map((src, idx) => (
+            <SwiperSlide key={idx}>
+              <Box
+                sx={{
+                  position: 'relative',
+                  height: { xs: 200, sm: 280, md: 340 },
+                  backgroundImage: `url(${src})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              >
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'linear-gradient(180deg, rgba(0,0,0,0.4), rgba(0,0,0,0.25))',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                    color: '#fff',
+                    px: 2,
+                  }}
+                >
+                  <Box>
+                    <Typography variant="h4" sx={{ fontWeight: 700 }}>
+                      Discover Amazing Restaurants
+                    </Typography>
+                    <Typography variant="body1" sx={{ opacity: 0.9, mt: 1 }}>
+                      Order delicious food from the best restaurants in your area
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </Box>
 
       <Box component="form" onSubmit={handleSearch} sx={{ mb: 4 }}>
         <TextField
@@ -144,7 +192,7 @@ const Home = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <DeliveryIcon sx={{ fontSize: 16, mr: 0.5, color: 'text.secondary' }} />
                   <Typography variant="body2" color="text.secondary">
-                    ${restaurant.deliveryFee} delivery fee
+                    ₹{restaurant.deliveryFee} delivery fee
                   </Typography>
                 </Box>
 
