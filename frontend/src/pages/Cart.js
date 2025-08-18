@@ -75,10 +75,14 @@ const Cart = () => {
 
     dispatch(createOrder(orderData))
       .unwrap()
-      .then(() => {
+      .then((created) => {
         dispatch(clearCart());
         setShowOrderDialog(false);
-        navigate('/orders');
+        if (created?.id) {
+          navigate(`/orders/${created.id}`);
+        } else {
+          navigate('/orders');
+        }
       })
       .catch((error) => {
         setOrderError(error || 'Failed to place order');

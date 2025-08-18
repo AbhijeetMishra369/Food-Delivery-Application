@@ -70,19 +70,19 @@ public class DataInitializer implements CommandLineRunner {
             Category appetizers = new Category();
             appetizers.setName("Appetizers");
             appetizers.setDescription("Delicious starters");
-            appetizers.setImageUrl("https://example.com/appetizers.jpg");
+            appetizers.setImageUrl("https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1600&auto=format&fit=crop");
             appetizers.setActive(true);
             
             Category mainCourses = new Category();
             mainCourses.setName("Main Courses");
             mainCourses.setDescription("Hearty main dishes");
-            mainCourses.setImageUrl("https://example.com/maincourses.jpg");
+            mainCourses.setImageUrl("https://images.unsplash.com/photo-1512058564366-18510be2db19?q=80&w=1600&auto=format&fit=crop");
             mainCourses.setActive(true);
             
             Category desserts = new Category();
             desserts.setName("Desserts");
             desserts.setDescription("Sweet treats");
-            desserts.setImageUrl("https://example.com/desserts.jpg");
+            desserts.setImageUrl("https://images.unsplash.com/photo-1541787286035-6c6a05f78c9a?q=80&w=1600&auto=format&fit=crop");
             desserts.setActive(true);
             
             categoryRepository.saveAll(Arrays.asList(appetizers, mainCourses, desserts));
@@ -95,7 +95,7 @@ public class DataInitializer implements CommandLineRunner {
             restaurant.setPhone("555-123-4567");
             restaurant.setEmail("info@deliciousfood.com");
             restaurant.setCuisine("American");
-            restaurant.setImageUrl("https://example.com/restaurant.jpg");
+            restaurant.setImageUrl("https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1600&auto=format&fit=crop");
             restaurant.setRating(4.5);
             restaurant.setReviewCount(120);
             restaurant.setActive(true);
@@ -112,7 +112,7 @@ public class DataInitializer implements CommandLineRunner {
             item1.setName("Chicken Wings");
             item1.setDescription("Crispy chicken wings with your choice of sauce.");
             item1.setPrice(12.99);
-            item1.setImageUrl("https://example.com/chickenwings.jpg");
+            item1.setImageUrl("https://images.unsplash.com/photo-1562967916-eb82221dfb36?q=80&w=1600&auto=format&fit=crop");
             item1.setVegetarian(false);
             item1.setSpicy(true);
             item1.setAvailable(true);
@@ -124,7 +124,7 @@ public class DataInitializer implements CommandLineRunner {
             item2.setName("Grilled Chicken");
             item2.setDescription("Healthy grilled chicken breast with seasonal vegetables.");
             item2.setPrice(15.99);
-            item2.setImageUrl("https://example.com/grilledchicken.jpg");
+            item2.setImageUrl("https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1600&auto=format&fit=crop");
             item2.setVegetarian(false);
             item2.setSpicy(false);
             item2.setAvailable(true);
@@ -136,7 +136,7 @@ public class DataInitializer implements CommandLineRunner {
             item3.setName("Chocolate Cake");
             item3.setDescription("Rich chocolate cake with a scoop of vanilla ice cream.");
             item3.setPrice(8.99);
-            item3.setImageUrl("https://example.com/chocolatecake.jpg");
+            item3.setImageUrl("https://images.unsplash.com/photo-1541782814452-d07b16b69c96?q=80&w=1600&auto=format&fit=crop");
             item3.setVegetarian(true);
             item3.setSpicy(false);
             item3.setAvailable(true);
@@ -148,7 +148,7 @@ public class DataInitializer implements CommandLineRunner {
             item4.setName("Caesar Salad");
             item4.setDescription("Fresh romaine lettuce, croutons, parmesan cheese, and Caesar dressing.");
             item4.setPrice(10.99);
-            item4.setImageUrl("https://example.com/caesarsalad.jpg");
+            item4.setImageUrl("https://images.unsplash.com/photo-1551248429-40975aa4de74?q=80&w=1600&auto=format&fit=crop");
             item4.setVegetarian(true);
             item4.setSpicy(false);
             item4.setAvailable(true);
