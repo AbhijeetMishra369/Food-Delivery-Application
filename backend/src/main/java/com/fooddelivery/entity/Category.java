@@ -32,6 +32,7 @@ public class Category {
     private boolean isActive = true;
     
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<MenuItem> menuItems;
     
     @Column(name = "created_at")

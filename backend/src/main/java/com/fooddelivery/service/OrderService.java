@@ -6,6 +6,7 @@ import com.fooddelivery.entity.*;
 import com.fooddelivery.repository.MenuItemRepository;
 import com.fooddelivery.repository.OrderRepository;
 import com.fooddelivery.repository.RestaurantRepository;
+import com.fooddelivery.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,16 +24,21 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final RestaurantRepository restaurantRepository;
     private final MenuItemRepository menuItemRepository;
+    private final UserRepository userRepository;
     
     @Transactional
     public OrderDto createOrder(OrderRequest request, Long userId) {
         // Get restaurant
         Restaurant restaurant = restaurantRepository.findById(request.getRestaurantId())
                 .orElseThrow(() -> new RuntimeException("Restaurant not found"));
+        // Get user
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
         
         // Create order
         Order order = new Order();
         order.setOrderNumber("ORD" + System.currentTimeMillis());
+        order.setUser(user);
         order.setRestaurant(restaurant);
         order.setDeliveryAddress(request.getDeliveryAddress());
         order.setDeliveryPhone(request.getDeliveryPhone());

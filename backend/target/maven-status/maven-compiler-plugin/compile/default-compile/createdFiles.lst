@@ -11,7 +11,9 @@ com/fooddelivery/service/PaymentService.class
 com/fooddelivery/config/DataInitializer.class
 com/fooddelivery/config/ApplicationConfig.class
 com/fooddelivery/controller/OrderController.class
+com/fooddelivery/controller/CategoryController.class
 com/fooddelivery/controller/RestaurantController.class
+com/fooddelivery/controller/CategoryController$CategoryDto.class
 com/fooddelivery/entity/MenuItem.class
 com/fooddelivery/dto/PaymentRequest.class
 com/fooddelivery/dto/AuthRequest.class
