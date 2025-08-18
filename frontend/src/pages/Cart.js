@@ -19,12 +19,7 @@ import {
   DialogContent,
   DialogActions,
 } from '@mui/material';
-import {
-  Add as AddIcon,
-  Remove as RemoveIcon,
-  Delete as DeleteIcon,
-  ShoppingCart as CartIcon,
-} from '@mui/icons-material';
+import { Add as AddIcon, Remove as RemoveIcon, ShoppingCart as CartIcon } from '@mui/icons-material';
 import { updateQuantity, removeFromCart, clearCart } from '../store/slices/cartSlice';
 import { createOrder } from '../store/slices/orderSlice';
 

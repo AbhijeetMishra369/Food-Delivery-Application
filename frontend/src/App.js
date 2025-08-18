@@ -43,6 +43,12 @@ const theme = createTheme({
         root: {
           textTransform: 'none',
           borderRadius: 8,
+          transition: 'all 200ms ease',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
+          '&:hover': {
+            transform: 'translateY(-1px)',
+            boxShadow: '0 6px 14px rgba(0,0,0,0.12)'
+          }
         },
       },
     },
@@ -51,6 +57,11 @@ const theme = createTheme({
         root: {
           borderRadius: 12,
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          transition: 'transform 200ms ease, box-shadow 200ms ease',
+          '&:hover': {
+            transform: 'translateY(-3px)',
+            boxShadow: '0 10px 24px rgba(0,0,0,0.14)'
+          }
         },
       },
     },

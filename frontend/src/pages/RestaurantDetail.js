@@ -52,10 +52,10 @@ const RestaurantDetail = () => {
   }, [dispatch, id]);
 
   useEffect(() => {
-    if (currentRestaurant) {
-      fetchMenuItems();
-      fetchCategories();
-    }
+    if (!currentRestaurant) return;
+    fetchMenuItems();
+    fetchCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentRestaurant]);
 
   const fetchMenuItems = async () => {

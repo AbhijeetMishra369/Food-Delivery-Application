@@ -16,12 +16,7 @@ import {
   StepLabel,
   Divider,
 } from '@mui/material';
-import {
-  AccessTime as TimeIcon,
-  LocalShipping as DeliveryIcon,
-  Receipt as ReceiptIcon,
-  CheckCircle as CheckIcon,
-} from '@mui/icons-material';
+import { AccessTime as TimeIcon, LocalShipping as DeliveryIcon, CheckCircle as CheckIcon } from '@mui/icons-material';
 import { fetchOrderById } from '../store/slices/orderSlice';
 
 const OrderDetail = () => {
