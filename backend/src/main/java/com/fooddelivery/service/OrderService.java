@@ -41,12 +41,6 @@ public class OrderService {
         order.setStatus(Order.OrderStatus.PENDING);
         order.setPaymentStatus(Order.PaymentStatus.PENDING);
         
-        // Calculate totals
-        double subtotal = 0.0;
-        double deliveryFee = restaurant.getDeliveryFee();
-        double tax = 0.0; // 10% tax
-        double total = 0.0;
-        
         // Create order items
         List<OrderItem> orderItems = request.getItems().stream()
                 .map(itemRequest -> {
@@ -61,13 +55,17 @@ public class OrderService {
                     orderItem.setTotalPrice(menuItem.getPrice() * itemRequest.getQuantity());
                     orderItem.setSpecialInstructions(itemRequest.getSpecialInstructions());
                     
-                    subtotal += orderItem.getTotalPrice();
                     return orderItem;
                 })
                 .collect(Collectors.toList());
         
-        tax = subtotal * 0.10; // 10% tax
-        total = subtotal + deliveryFee + tax;
+        // Calculate totals
+        double subtotal = orderItems.stream()
+                .mapToDouble(OrderItem::getTotalPrice)
+                .sum();
+        double deliveryFee = restaurant.getDeliveryFee();
+        double tax = subtotal * 0.10; // 10% tax
+        double total = subtotal + deliveryFee + tax;
         
         order.setSubtotal(subtotal);
         order.setDeliveryFee(deliveryFee);

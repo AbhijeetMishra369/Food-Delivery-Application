@@ -17,7 +17,6 @@ com/fooddelivery/dto/PaymentRequest.class
 com/fooddelivery/dto/AuthRequest.class
 com/fooddelivery/entity/Restaurant.class
 com/fooddelivery/repository/RestaurantRepository.class
-com/fooddelivery/entity/User$Role.class
 com/fooddelivery/controller/AuthController.class
 com/fooddelivery/dto/OrderRequest$OrderItemRequest.class
 com/fooddelivery/dto/RegisterRequest.class
@@ -27,6 +26,7 @@ com/fooddelivery/entity/Category.class
 com/fooddelivery/entity/OrderItem.class
 com/fooddelivery/entity/Order$OrderStatus.class
 com/fooddelivery/service/OrderService.class
+com/fooddelivery/entity/User$UserRole.class
 com/fooddelivery/FoodDeliveryApplication.class
 com/fooddelivery/dto/AuthResponse.class
 com/fooddelivery/config/SecurityConfig.class
