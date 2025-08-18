@@ -106,6 +106,43 @@ public class DataInitializer implements CommandLineRunner {
             restaurant.setOwner(restaurantOwner);
             
             restaurantRepository.save(restaurant);
+
+            // Additional Restaurants
+            Restaurant restaurant2 = new Restaurant();
+            restaurant2.setName("Spice Hub");
+            restaurant2.setDescription("Authentic Indian flavors and classics.");
+            restaurant2.setAddress("202 Masala Street");
+            restaurant2.setPhone("555-222-3333");
+            restaurant2.setEmail("hello@spicehub.com");
+            restaurant2.setCuisine("Indian");
+            restaurant2.setImageUrl("https://images.unsplash.com/photo-1598970434795-0c54fe7c0642?q=80&w=1600&auto=format&fit=crop");
+            restaurant2.setRating(4.6);
+            restaurant2.setReviewCount(210);
+            restaurant2.setActive(true);
+            restaurant2.setOpen(true);
+            restaurant2.setDeliveryTime(35);
+            restaurant2.setDeliveryFee(7.0);
+            restaurant2.setMinimumOrder(12.0);
+            restaurant2.setOwner(restaurantOwner);
+            restaurantRepository.save(restaurant2);
+
+            Restaurant restaurant3 = new Restaurant();
+            restaurant3.setName("Pasta Point");
+            restaurant3.setDescription("Fresh handmade pastas and Italian favorites.");
+            restaurant3.setAddress("303 Roma Avenue");
+            restaurant3.setPhone("555-444-5555");
+            restaurant3.setEmail("contact@pastapoint.com");
+            restaurant3.setCuisine("Italian");
+            restaurant3.setImageUrl("https://images.unsplash.com/photo-1512058564366-18510be2db19?q=80&w=1600&auto=format&fit=crop");
+            restaurant3.setRating(4.3);
+            restaurant3.setReviewCount(95);
+            restaurant3.setActive(true);
+            restaurant3.setOpen(true);
+            restaurant3.setDeliveryTime(25);
+            restaurant3.setDeliveryFee(6.0);
+            restaurant3.setMinimumOrder(9.0);
+            restaurant3.setOwner(restaurantOwner);
+            restaurantRepository.save(restaurant3);
             
             // Create Menu Items
             MenuItem item1 = new MenuItem();
@@ -156,7 +193,57 @@ public class DataInitializer implements CommandLineRunner {
             item4.setRestaurant(restaurant);
             item4.setCategory(appetizers);
             
-            menuItemRepository.saveAll(Arrays.asList(item1, item2, item3, item4));
+            // Extra items for restaurant2
+            MenuItem item5 = new MenuItem();
+            item5.setName("Butter Chicken");
+            item5.setDescription("Creamy tomato gravy with tender chicken.");
+            item5.setPrice(13.49);
+            item5.setImageUrl("https://images.unsplash.com/photo-1625944528106-9a9f0d2f2f88?q=80&w=1600&auto=format&fit=crop");
+            item5.setVegetarian(false);
+            item5.setSpicy(false);
+            item5.setAvailable(true);
+            item5.setPreparationTime(30);
+            item5.setRestaurant(restaurant2);
+            item5.setCategory(mainCourses);
+
+            MenuItem item6 = new MenuItem();
+            item6.setName("Paneer Tikka");
+            item6.setDescription("Grilled cottage cheese with spices.");
+            item6.setPrice(11.25);
+            item6.setImageUrl("https://images.unsplash.com/photo-1633337479270-8d5809e2c8b1?q=80&w=1600&auto=format&fit=crop");
+            item6.setVegetarian(true);
+            item6.setSpicy(true);
+            item6.setAvailable(true);
+            item6.setPreparationTime(18);
+            item6.setRestaurant(restaurant2);
+            item6.setCategory(appetizers);
+
+            // Extra items for restaurant3
+            MenuItem item7 = new MenuItem();
+            item7.setName("Spaghetti Carbonara");
+            item7.setDescription("Classic carbonara with eggs, pecorino, and pancetta.");
+            item7.setPrice(12.50);
+            item7.setImageUrl("https://images.unsplash.com/photo-1521389508051-d7ffb5dc8bbf?q=80&w=1600&auto=format&fit=crop");
+            item7.setVegetarian(false);
+            item7.setSpicy(false);
+            item7.setAvailable(true);
+            item7.setPreparationTime(20);
+            item7.setRestaurant(restaurant3);
+            item7.setCategory(mainCourses);
+
+            MenuItem item8 = new MenuItem();
+            item8.setName("Tiramisu");
+            item8.setDescription("Coffee-flavored Italian dessert.");
+            item8.setPrice(7.99);
+            item8.setImageUrl("https://images.unsplash.com/photo-1512058564366-18510be2db19?q=80&w=1600&auto=format&fit=crop");
+            item8.setVegetarian(true);
+            item8.setSpicy(false);
+            item8.setAvailable(true);
+            item8.setPreparationTime(10);
+            item8.setRestaurant(restaurant3);
+            item8.setCategory(desserts);
+
+            menuItemRepository.saveAll(Arrays.asList(item1, item2, item3, item4, item5, item6, item7, item8));
             
             log.info("Sample data initialized successfully!");
         }
