@@ -49,7 +49,7 @@ public class DataInitializer implements CommandLineRunner {
             regularUser.setPassword(passwordEncoder.encode("password"));
             regularUser.setFirstName("Regular");
             regularUser.setLastName("User");
-            regularUser.setPhone("1234567890");
+            regularUser.setPhone("5550000001");
             regularUser.setAddress("456 User Ave");
             regularUser.setRole(User.UserRole.USER);
             regularUser.setEnabled(true);

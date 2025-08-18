@@ -16,22 +16,26 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     
     Page<Restaurant> findByIsActiveTrueAndIsOpenTrue(Pageable pageable);
     
+    @Query("SELECT DISTINCT r FROM Restaurant r LEFT JOIN FETCH r.owner WHERE r.isActive = true AND r.isOpen = true")
     List<Restaurant> findByIsActiveTrueAndIsOpenTrue();
     
-    List<Restaurant> findByCuisine(String cuisine);
+    @Query("SELECT DISTINCT r FROM Restaurant r LEFT JOIN FETCH r.owner WHERE r.cuisine = :cuisine")
+    List<Restaurant> findByCuisine(@Param("cuisine") String cuisine);
     
-    @Query("SELECT r FROM Restaurant r WHERE " +
+    @Query("SELECT DISTINCT r FROM Restaurant r LEFT JOIN FETCH r.owner WHERE " +
            "LOWER(r.name) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
            "LOWER(r.cuisine) LIKE LOWER(CONCAT('%', :query, '%'))")
     List<Restaurant> searchByNameOrCuisine(@Param("query") String query);
     
-    List<Restaurant> findByOwnerId(Long ownerId);
+    @Query("SELECT DISTINCT r FROM Restaurant r LEFT JOIN FETCH r.owner WHERE r.owner.id = :ownerId")
+    List<Restaurant> findByOwnerId(@Param("ownerId") Long ownerId);
     
-    Optional<Restaurant> findByIdAndIsActiveTrue(Long id);
+    @Query("SELECT DISTINCT r FROM Restaurant r LEFT JOIN FETCH r.owner WHERE r.id = :id AND r.isActive = true")
+    Optional<Restaurant> findByIdAndIsActiveTrue(@Param("id") Long id);
     
-    @Query("SELECT r FROM Restaurant r WHERE r.rating >= :minRating")
+    @Query("SELECT DISTINCT r FROM Restaurant r LEFT JOIN FETCH r.owner WHERE r.rating >= :minRating")
     List<Restaurant> findByMinimumRating(@Param("minRating") double minRating);
     
-    @Query("SELECT r FROM Restaurant r WHERE r.deliveryTime <= :maxDeliveryTime")
+    @Query("SELECT DISTINCT r FROM Restaurant r LEFT JOIN FETCH r.owner WHERE r.deliveryTime <= :maxDeliveryTime")
     List<Restaurant> findByMaxDeliveryTime(@Param("maxDeliveryTime") int maxDeliveryTime);
 }

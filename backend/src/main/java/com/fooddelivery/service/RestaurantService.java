@@ -26,7 +26,41 @@ public class RestaurantService {
     
     public Page<RestaurantDto> getAllRestaurants(Pageable pageable) {
         return restaurantRepository.findByIsActiveTrueAndIsOpenTrue(pageable)
-                .map(this::convertToDto);
+                .map(restaurant -> {
+                    // For pageable queries, we need to handle lazy loading differently
+                    RestaurantDto dto = new RestaurantDto();
+                    dto.setId(restaurant.getId());
+                    dto.setName(restaurant.getName());
+                    dto.setDescription(restaurant.getDescription());
+                    dto.setAddress(restaurant.getAddress());
+                    dto.setPhone(restaurant.getPhone());
+                    dto.setEmail(restaurant.getEmail());
+                    dto.setCuisine(restaurant.getCuisine());
+                    dto.setImageUrl(restaurant.getImageUrl());
+                    dto.setRating(restaurant.getRating());
+                    dto.setReviewCount(restaurant.getReviewCount());
+                    dto.setActive(restaurant.isActive());
+                    dto.setOpen(restaurant.isOpen());
+                    dto.setDeliveryTime(restaurant.getDeliveryTime());
+                    dto.setDeliveryFee(restaurant.getDeliveryFee());
+                    dto.setMinimumOrder(restaurant.getMinimumOrder());
+                    dto.setCreatedAt(restaurant.getCreatedAt());
+                    dto.setUpdatedAt(restaurant.getUpdatedAt());
+                    
+                    // Handle owner information safely
+                    try {
+                        if (restaurant.getOwner() != null) {
+                            dto.setOwnerId(restaurant.getOwner().getId());
+                            dto.setOwnerName(restaurant.getOwner().getFirstName() + " " + restaurant.getOwner().getLastName());
+                        }
+                    } catch (Exception e) {
+                        // If lazy loading fails, just set the owner ID if available
+                        dto.setOwnerId(restaurant.getOwner() != null ? restaurant.getOwner().getId() : null);
+                        dto.setOwnerName("Owner information not available");
+                    }
+                    
+                    return dto;
+                });
     }
     
     public RestaurantDto getRestaurantById(Long id) {

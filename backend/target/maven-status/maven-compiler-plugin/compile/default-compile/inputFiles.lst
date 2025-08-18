@@ -33,6 +33,7 @@
 /workspace/backend/src/main/java/com/fooddelivery/config/ApplicationConfig.java
 /workspace/backend/src/main/java/com/fooddelivery/entity/User.java
 /workspace/backend/src/main/java/com/fooddelivery/FoodDeliveryApplication.java
+/workspace/backend/src/main/java/com/fooddelivery/controller/CategoryController.java
 /workspace/backend/src/main/java/com/fooddelivery/controller/OrderController.java
 /workspace/backend/src/main/java/com/fooddelivery/repository/CategoryRepository.java
 /workspace/backend/src/main/java/com/fooddelivery/security/JwtUtil.java
