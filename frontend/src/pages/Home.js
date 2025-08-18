@@ -23,7 +23,7 @@ import {
   AccessTime as TimeIcon,
   LocalShipping as DeliveryIcon,
 } from '@mui/icons-material';
-import { fetchRestaurants, searchRestaurants } from '../store/slices/restaurantSlice';
+import { fetchRestaurantsPage, searchRestaurants } from '../store/slices/restaurantSlice';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
 import 'swiper/css';
@@ -32,11 +32,12 @@ import 'swiper/css/pagination';
 const Home = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { restaurants, loading, error } = useSelector((state) => state.restaurant);
+  const { restaurants, loading, error, page, hasMore, appending } = useSelector((state) => state.restaurant);
   const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState({ cuisine: 'all', minRating: 0, maxDeliveryTime: 0 });
 
   useEffect(() => {
-    dispatch(fetchRestaurants());
+    dispatch(fetchRestaurantsPage({ page: 0, size: 9 }));
   }, [dispatch]);
 
   const handleSearch = (e) => {
@@ -44,7 +45,7 @@ const Home = () => {
     if (searchQuery.trim()) {
       dispatch(searchRestaurants(searchQuery));
     } else {
-      dispatch(fetchRestaurants());
+      dispatch(fetchRestaurantsPage({ page: 0, size: 9 }));
     }
   };
 
@@ -52,13 +53,26 @@ const Home = () => {
     navigate(`/restaurant/${restaurantId}`);
   };
 
-  if (loading) {
+  if (loading && restaurants.length === 0) {
     return (
       <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
         <CircularProgress />
       </Container>
     );
   }
+
+  const filteredRestaurants = restaurants.filter((restaurant) => {
+    const cuisineOk = filters.cuisine === 'all' || (restaurant.cuisine || '').toLowerCase() === filters.cuisine.toLowerCase();
+    const ratingOk = !filters.minRating || (restaurant.rating || 0) >= filters.minRating;
+    const timeOk = !filters.maxDeliveryTime || (restaurant.deliveryTime || 0) <= filters.maxDeliveryTime;
+    return cuisineOk && ratingOk && timeOk;
+  });
+
+  const handleLoadMore = () => {
+    if (hasMore && !appending) {
+      dispatch(fetchRestaurantsPage({ page: page + 1, size: 9 }));
+    }
+  };
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -114,7 +128,7 @@ const Home = () => {
         </Swiper>
       </Box>
 
-      <Box component="form" onSubmit={handleSearch} sx={{ mb: 4 }}>
+      <Box component="form" onSubmit={handleSearch} sx={{ mb: 2 }}>
         <TextField
           fullWidth
           variant="outlined"
@@ -138,6 +152,44 @@ const Home = () => {
         />
       </Box>
 
+      <Grid container spacing={2} sx={{ mb: 3 }}>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            select
+            fullWidth
+            label="Cuisine"
+            SelectProps={{ native: true }}
+            value={filters.cuisine}
+            onChange={(e) => setFilters((f) => ({ ...f, cuisine: e.target.value }))}
+          >
+            <option value="all">All</option>
+            <option value="American">American</option>
+            <option value="Indian">Indian</option>
+            <option value="Italian">Italian</option>
+          </TextField>
+        </Grid>
+        <Grid item xs={6} sm={4}>
+          <TextField
+            type="number"
+            label="Min Rating"
+            fullWidth
+            inputProps={{ min: 0, max: 5, step: 0.5 }}
+            value={filters.minRating}
+            onChange={(e) => setFilters((f) => ({ ...f, minRating: Number(e.target.value) }))}
+          />
+        </Grid>
+        <Grid item xs={6} sm={4}>
+          <TextField
+            type="number"
+            label="Max Delivery Time (min)"
+            fullWidth
+            inputProps={{ min: 0, max: 120, step: 5 }}
+            value={filters.maxDeliveryTime}
+            onChange={(e) => setFilters((f) => ({ ...f, maxDeliveryTime: Number(e.target.value) }))}
+          />
+        </Grid>
+      </Grid>
+
       {error && (
         <Alert severity="error" sx={{ mb: 3 }}>
           {error}
@@ -145,12 +197,12 @@ const Home = () => {
       )}
 
       <Grid container spacing={3}>
-        {restaurants.map((restaurant) => (
+        {filteredRestaurants.map((restaurant) => (
           <Grid item xs={12} sm={6} md={4} key={restaurant.id}>
-            <Card 
-              sx={{ 
-                height: '100%', 
-                display: 'flex', 
+            <Card
+              sx={{
+                height: '100%',
+                display: 'flex',
                 flexDirection: 'column',
                 cursor: 'pointer',
                 transition: 'transform 0.2s',
@@ -170,7 +222,7 @@ const Home = () => {
                 <Typography variant="h6" component="h2" gutterBottom>
                   {restaurant.name}
                 </Typography>
-                
+
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                   {restaurant.description}
                 </Typography>
@@ -196,18 +248,13 @@ const Home = () => {
                   </Typography>
                 </Box>
 
-                <Chip 
-                  label={restaurant.cuisine} 
-                  size="small" 
-                  color="primary" 
-                  variant="outlined"
-                />
+                <Chip label={restaurant.cuisine} size="small" color="primary" variant="outlined" />
               </CardContent>
-              
+
               <CardActions>
-                <Button 
-                  size="small" 
-                  variant="contained" 
+                <Button
+                  size="small"
+                  variant="contained"
                   fullWidth
                   onClick={(e) => {
                     e.stopPropagation();
@@ -222,7 +269,7 @@ const Home = () => {
         ))}
       </Grid>
 
-      {restaurants.length === 0 && !loading && !error && (
+      {filteredRestaurants.length === 0 && !loading && !error && (
         <Box sx={{ textAlign: 'center', mt: 4 }}>
           <Typography variant="h6" color="text.secondary">
             No restaurants found
@@ -232,6 +279,12 @@ const Home = () => {
           </Typography>
         </Box>
       )}
+
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+        <Button variant="outlined" onClick={handleLoadMore} disabled={!hasMore || appending}>
+          {appending ? 'Loading...' : hasMore ? 'Load More' : 'No More Results'}
+        </Button>
+      </Box>
     </Container>
   );
 };

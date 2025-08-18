@@ -46,6 +46,9 @@ const RestaurantDetail = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [menuLoading, setMenuLoading] = useState(false);
+  const [vegOnly, setVegOnly] = useState(false);
+  const [spicyOnly, setSpicyOnly] = useState(false);
+  const [maxPrice, setMaxPrice] = useState(0);
 
   useEffect(() => {
     dispatch(fetchRestaurantById(id));
@@ -102,7 +105,10 @@ const RestaurantDetail = () => {
       (item.categoryName && item.categoryName.toLowerCase() === selectedCategory.toLowerCase());
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+    const vegOk = !vegOnly || item.isVegetarian;
+    const spicyOk = !spicyOnly || item.isSpicy;
+    const priceOk = !maxPrice || (item.price || 0) <= maxPrice;
+    return matchesCategory && matchesSearch && vegOk && spicyOk && priceOk;
   });
 
   if (loading) {
@@ -221,6 +227,28 @@ const RestaurantDetail = () => {
             <Tab key={category.id} label={category.name} value={category.name} />
           ))}
         </Tabs>
+        <Box sx={{ display: 'flex', gap: 2, mt: 2, flexWrap: 'wrap' }}>
+          <Chip
+            label={vegOnly ? 'Veg Only: ON' : 'Veg Only: OFF'}
+            color={vegOnly ? 'success' : 'default'}
+            variant={vegOnly ? 'filled' : 'outlined'}
+            onClick={() => setVegOnly((v) => !v)}
+          />
+          <Chip
+            label={spicyOnly ? 'Spicy Only: ON' : 'Spicy Only: OFF'}
+            color={spicyOnly ? 'error' : 'default'}
+            variant={spicyOnly ? 'filled' : 'outlined'}
+            onClick={() => setSpicyOnly((v) => !v)}
+          />
+          <TextField
+            type="number"
+            label="Max Price"
+            size="small"
+            inputProps={{ min: 0, step: 1 }}
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(Number(e.target.value))}
+          />
+        </Box>
       </Box>
 
       {/* Menu Items */}

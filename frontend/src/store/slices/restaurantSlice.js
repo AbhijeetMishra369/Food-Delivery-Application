@@ -40,11 +40,29 @@ export const searchRestaurants = createAsyncThunk(
   }
 );
 
+// Paginated fetch for infinite scroll
+export const fetchRestaurantsPage = createAsyncThunk(
+  'restaurant/fetchRestaurantsPage',
+  async ({ page = 0, size = 9 }, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/restaurants/page?page=${page}&size=${size}`);
+      // Spring Data page format has `content`; if not, fallback to array
+      const payload = Array.isArray(response.data) ? { content: response.data, last: true, number: page } : response.data;
+      return payload;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to fetch restaurants page');
+    }
+  }
+);
+
 const initialState = {
   restaurants: [],
   currentRestaurant: null,
   loading: false,
   error: null,
+  page: 0,
+  hasMore: true,
+  appending: false,
 };
 
 const restaurantSlice = createSlice({
@@ -68,6 +86,8 @@ const restaurantSlice = createSlice({
       .addCase(fetchRestaurants.fulfilled, (state, action) => {
         state.loading = false;
         state.restaurants = action.payload;
+        state.page = 0;
+        state.hasMore = true;
       })
       .addCase(fetchRestaurants.rejected, (state, action) => {
         state.loading = false;
@@ -94,9 +114,31 @@ const restaurantSlice = createSlice({
       .addCase(searchRestaurants.fulfilled, (state, action) => {
         state.loading = false;
         state.restaurants = action.payload;
+        state.page = 0;
+        state.hasMore = false;
       })
       .addCase(searchRestaurants.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload;
+      })
+      // Paginated fetch
+      .addCase(fetchRestaurantsPage.pending, (state) => {
+        state.appending = true;
+        state.error = null;
+      })
+      .addCase(fetchRestaurantsPage.fulfilled, (state, action) => {
+        state.appending = false;
+        const { content = [], last = true, number = 0 } = action.payload || {};
+        if (number === 0) {
+          state.restaurants = content;
+        } else {
+          state.restaurants = [...state.restaurants, ...content];
+        }
+        state.page = number;
+        state.hasMore = !last && content.length > 0;
+      })
+      .addCase(fetchRestaurantsPage.rejected, (state, action) => {
+        state.appending = false;
         state.error = action.payload;
       });
   },
