@@ -84,12 +84,14 @@ public class OrderService {
         return convertToDto(savedOrder);
     }
     
+    @Transactional(readOnly = true)
     public OrderDto getOrderById(Long id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
         return convertToDto(order);
     }
     
+    @Transactional(readOnly = true)
     public List<OrderDto> getUserOrders(Long userId) {
         return orderRepository.findByUserIdOrderByCreatedAtDesc(userId)
                 .stream()
@@ -97,11 +99,13 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
     
+    @Transactional(readOnly = true)
     public Page<OrderDto> getUserOrders(Long userId, Pageable pageable) {
         return orderRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable)
                 .map(this::convertToDto);
     }
     
+    @Transactional(readOnly = true)
     public List<OrderDto> getRestaurantOrders(Long restaurantId) {
         return orderRepository.findByRestaurantIdOrderByCreatedAtDesc(restaurantId)
                 .stream()
