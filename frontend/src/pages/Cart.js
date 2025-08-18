@@ -22,6 +22,7 @@ import {
 import { Add as AddIcon, Remove as RemoveIcon, ShoppingCart as CartIcon } from '@mui/icons-material';
 import { updateQuantity, removeFromCart, clearCart } from '../store/slices/cartSlice';
 import { createOrder } from '../store/slices/orderSlice';
+import axios from 'axios';
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -34,6 +35,7 @@ const Cart = () => {
   const [deliveryPhone, setDeliveryPhone] = useState('');
   const [deliveryInstructions, setDeliveryInstructions] = useState('');
   const [showOrderDialog, setShowOrderDialog] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('CASH_ON_DELIVERY');
   const [orderError, setOrderError] = useState('');
 
   const handleQuantityChange = (itemId, newQuantity) => {
@@ -59,7 +61,7 @@ const Cart = () => {
     setShowOrderDialog(true);
   };
 
-  const handleConfirmOrder = () => {
+  const handleConfirmOrder = async () => {
     const orderData = {
       restaurantId,
       items: items.map(item => ({
@@ -70,23 +72,61 @@ const Cart = () => {
       deliveryAddress,
       deliveryPhone,
       deliveryInstructions,
-      paymentMethod: 'CASH_ON_DELIVERY',
+      paymentMethod,
     };
+    try {
+      const created = await dispatch(createOrder(orderData)).unwrap();
+      // If online payment, create Razorpay order and open checkout
+      if (paymentMethod === 'ONLINE' && created?.id) {
+        const token = localStorage.getItem('token');
+        const paymentRes = await axios.post(`http://localhost:8080/api/payments/create-order/${created.id}`, {}, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
+        const { razorpayOrderId, amount, keyId } = paymentRes.data || {};
 
-    dispatch(createOrder(orderData))
-      .unwrap()
-      .then((created) => {
+        const options = {
+          key: keyId,
+          amount: Math.round((amount || 0) * 100),
+          currency: 'INR',
+          name: 'Food Delivery',
+          description: `Order #${created.orderNumber}`,
+          order_id: razorpayOrderId,
+          handler: async function (response) {
+            try {
+              await axios.post('http://localhost:8080/api/payments/verify', {
+                orderId: created.id,
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+                paymentMethod: 'ONLINE'
+              }, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+              dispatch(clearCart());
+              setShowOrderDialog(false);
+              navigate(`/orders/${created.id}`);
+            } catch (e) {
+              setOrderError('Payment verification failed');
+            }
+          },
+          prefill: {
+            contact: deliveryPhone,
+          },
+          theme: { color: '#ff6b35' },
+        };
+        if (window.Razorpay) {
+          const rzp = new window.Razorpay(options);
+          rzp.open();
+        } else {
+          setOrderError('Payment SDK not loaded');
+        }
+      } else {
+        // COD flow
         dispatch(clearCart());
         setShowOrderDialog(false);
-        if (created?.id) {
-          navigate(`/orders/${created.id}`);
-        } else {
-          navigate('/orders');
-        }
-      })
-      .catch((error) => {
-        setOrderError(error || 'Failed to place order');
-      });
+        navigate(created?.id ? `/orders/${created.id}` : '/orders');
+      }
+    } catch (error) {
+      setOrderError(error || 'Failed to place order');
+    }
   };
 
   if (items.length === 0) {
@@ -248,6 +288,14 @@ const Cart = () => {
               >
                 {loading ? <CircularProgress size={24} /> : 'Place Order'}
               </Button>
+              <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+                <Button variant={paymentMethod === 'CASH_ON_DELIVERY' ? 'contained' : 'outlined'} onClick={() => setPaymentMethod('CASH_ON_DELIVERY')} fullWidth>
+                  Cash on Delivery
+                </Button>
+                <Button variant={paymentMethod === 'ONLINE' ? 'contained' : 'outlined'} onClick={() => setPaymentMethod('ONLINE')} fullWidth>
+                  Pay Online
+                </Button>
+              </Box>
             </CardContent>
           </Card>
         </Grid>

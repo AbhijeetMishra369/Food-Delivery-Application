@@ -62,7 +62,8 @@ public class PaymentService {
                     "PENDING",
                     "Payment order created successfully",
                     order.getTotal(),
-                    "INR"
+                    "INR",
+                    razorpayKeyId
             );
             
         } catch (RazorpayException e) {
@@ -105,7 +106,8 @@ public class PaymentService {
                     "COMPLETED",
                     "Payment processed successfully",
                     order.getTotal(),
-                    "INR"
+                    "INR",
+                    razorpayKeyId
             );
             
         } catch (Exception e) {
