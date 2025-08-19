@@ -105,12 +105,15 @@ const Register = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (validateForm()) {
       const { confirmPassword, ...registrationData } = formData;
-      dispatch(register(registrationData));
+      const resultAction = await dispatch(register(registrationData));
+      if (register.fulfilled.match(resultAction)) {
+        navigate('/login', { replace: true, state: { registeredEmail: formData.email } });
+      }
     }
   };
 

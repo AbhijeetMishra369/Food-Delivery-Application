@@ -22,7 +22,7 @@ export const register = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/auth/register`, userData);
-      localStorage.setItem('token', response.data.token);
+      // Do not auto-login after registration. Require explicit login.
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Registration failed');
@@ -82,9 +82,10 @@ const authSlice = createSlice({
       })
       .addCase(register.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
-        state.token = action.payload.token;
-        state.isAuthenticated = true;
+        // Registration succeeded, but keep the user logged out until they log in
+        state.user = null;
+        state.token = null;
+        state.isAuthenticated = false;
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;

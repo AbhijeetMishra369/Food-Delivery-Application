@@ -7,6 +7,7 @@ import { store } from './store/store';
 
 // Components
 import Header from './components/Header';
+import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -82,9 +83,12 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/restaurant/:id" element={<RestaurantDetail />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/orders" element={<Orders />} />
-                <Route path="/orders/:id" element={<OrderDetail />} />
+
+                <Route element={<ProtectedRoute />}>
+                  <Route path="/cart" element={<Cart />} />
+                  <Route path="/orders" element={<Orders />} />
+                  <Route path="/orders/:id" element={<OrderDetail />} />
+                </Route>
               </Routes>
             </main>
           </div>

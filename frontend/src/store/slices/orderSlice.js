@@ -49,6 +49,23 @@ export const fetchOrderById = createAsyncThunk(
   }
 );
 
+export const updateOrderStatus = createAsyncThunk(
+  'order/updateOrderStatus',
+  async ({ orderId, status }, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put(
+        `${API_BASE_URL}/orders/${orderId}/status?status=${status}`,
+        null,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to update order status');
+    }
+  }
+);
+
 const initialState = {
   orders: [],
   currentOrder: null,
@@ -106,6 +123,25 @@ const orderSlice = createSlice({
         state.currentOrder = action.payload;
       })
       .addCase(fetchOrderById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Update order status
+      .addCase(updateOrderStatus.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateOrderStatus.fulfilled, (state, action) => {
+        state.loading = false;
+        const updated = action.payload;
+        state.currentOrder = updated;
+        // Update in list if present
+        const idx = state.orders.findIndex((o) => o.id === updated.id);
+        if (idx !== -1) {
+          state.orders[idx] = updated;
+        }
+      })
+      .addCase(updateOrderStatus.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
