@@ -12,6 +12,8 @@ import {
   Avatar,
   Menu,
   MenuItem,
+  InputBase,
+  Paper,
 } from '@mui/material';
 import {
   ShoppingCart as CartIcon,
@@ -50,21 +52,45 @@ const Header = () => {
 
   return (
     <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-      <Toolbar>
-        <RestaurantIcon sx={{ mr: 2 }} />
-        <Typography
-          variant="h6"
-          component={Link}
-          to="/"
-          sx={{
-            flexGrow: 1,
-            textDecoration: 'none',
-            color: 'inherit',
-            fontWeight: 'bold',
-          }}
-        >
-          Food Delivery
-        </Typography>
+      <Toolbar sx={{ gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{
+            width: 34,
+            height: 34,
+            borderRadius: 1.5,
+            bgcolor: 'primary.main',
+            display: 'grid',
+            placeItems: 'center'
+          }}>
+            <RestaurantIcon sx={{ color: '#fff' }} />
+          </Box>
+          <Typography
+            variant="h6"
+            component={Link}
+            to="/"
+            sx={{
+              textDecoration: 'none',
+              color: 'text.primary',
+              fontWeight: 800,
+              letterSpacing: '-0.02em'
+            }}
+          >
+            Food Delivery
+          </Typography>
+        </Box>
+
+        <Box sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}>
+          <Paper elevation={0} sx={{
+            px: 2,
+            py: 0.5,
+            borderRadius: 2,
+            border: '1px solid rgba(40,44,63,0.12)',
+            maxWidth: 560,
+            mx: 'auto'
+          }}>
+            <InputBase placeholder="Search for restaurants and dishes" fullWidth />
+          </Paper>
+        </Box>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           {isAuthenticated ? (
