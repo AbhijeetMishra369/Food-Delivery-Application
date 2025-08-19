@@ -12,6 +12,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
 
 @Configuration
 @RequiredArgsConstructor
@@ -41,5 +45,17 @@ public class ApplicationConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public OpenAPI foodDeliveryOpenAPI() {
+        return new OpenAPI()
+                .info(new Info()
+                        .title("Food Delivery API")
+                        .description("API documentation for the Food Delivery Application")
+                        .version("v1.0.0")
+                        .contact(new Contact().name("Food Delivery").email("support@example.com"))
+                        .license(new License().name("Apache 2.0"))
+                );
     }
 }

@@ -16,56 +16,106 @@ import Cart from './pages/Cart';
 import Orders from './pages/Orders';
 import OrderDetail from './pages/OrderDetail';
 
-// Create theme
+// Create theme (Swiggy-like palette & components)
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#ff6b35',
+      main: '#fc8019', // Swiggy orange
+      contrastText: '#ffffff',
     },
     secondary: {
-      main: '#f7931e',
+      main: '#ff5200',
+    },
+    text: {
+      primary: '#282c3f',
+      secondary: '#686b78',
     },
     background: {
-      default: '#f5f5f5',
+      default: '#f5f3f1',
+      paper: '#ffffff',
     },
+    divider: 'rgba(40,44,63,0.12)'
   },
+  shape: {
+    borderRadius: 10,
+  },
+  shadows: [
+    'none',
+    '0 2px 8px rgba(0,0,0,0.06)',
+    '0 4px 14px rgba(0,0,0,0.08)',
+    ...Array(22).fill('0 4px 14px rgba(0,0,0,0.08)')
+  ],
   typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
     h4: {
-      fontWeight: 600,
+      fontWeight: 700,
+      letterSpacing: '-0.02em',
     },
     h5: {
-      fontWeight: 600,
+      fontWeight: 700,
+      letterSpacing: '-0.01em',
     },
+    button: {
+      fontWeight: 600,
+    }
   },
   components: {
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#ffffff',
+          color: '#282c3f',
+          borderBottom: '1px solid rgba(40,44,63,0.12)'
+        }
+      }
+    },
     MuiButton: {
       styleOverrides: {
         root: {
           textTransform: 'none',
-          borderRadius: 8,
-          transition: 'all 200ms ease',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
+          borderRadius: 10,
+          paddingInline: 18,
+          height: 42,
+          boxShadow: '0 2px 6px rgba(252,128,25,0.15)',
           '&:hover': {
             transform: 'translateY(-1px)',
-            boxShadow: '0 6px 14px rgba(0,0,0,0.12)'
+            boxShadow: '0 8px 18px rgba(252,128,25,0.25)'
           }
         },
+        containedPrimary: {
+          color: '#fff'
+        }
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          borderRadius: 14,
+          overflow: 'hidden',
           transition: 'transform 200ms ease, box-shadow 200ms ease',
           '&:hover': {
-            transform: 'translateY(-3px)',
-            boxShadow: '0 10px 24px rgba(0,0,0,0.14)'
+            transform: 'translateY(-4px)',
+            boxShadow: '0 12px 28px rgba(0,0,0,0.12)'
           }
         },
       },
     },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          backgroundColor: '#f0f0f3',
+        }
+      }
+    },
+    MuiAvatar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#ffe8d6',
+          color: '#fc8019'
+        }
+      }
+    }
   },
 });
 
