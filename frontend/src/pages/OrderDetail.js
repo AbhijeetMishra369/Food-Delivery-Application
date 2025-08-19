@@ -17,7 +17,7 @@ import {
   Divider,
 } from '@mui/material';
 import { AccessTime as TimeIcon, LocalShipping as DeliveryIcon, CheckCircle as CheckIcon } from '@mui/icons-material';
-import { fetchOrderById } from '../store/slices/orderSlice';
+import { fetchOrderById, updateOrderStatus } from '../store/slices/orderSlice';
 
 const OrderDetail = () => {
   const { id } = useParams();
@@ -27,6 +27,26 @@ const OrderDetail = () => {
   useEffect(() => {
     dispatch(fetchOrderById(id));
   }, [dispatch, id]);
+
+  // If ETA exists and is in the past, auto-update to DELIVERED.
+  useEffect(() => {
+    if (!currentOrder) return;
+    if (currentOrder.status === 'DELIVERED' || currentOrder.status === 'CANCELLED') return;
+    const eta = currentOrder.estimatedDeliveryTime ? new Date(currentOrder.estimatedDeliveryTime).getTime() : null;
+    if (!eta) return;
+
+    const now = Date.now();
+    if (eta <= now) {
+      dispatch(updateOrderStatus({ orderId: currentOrder.id, status: 'DELIVERED' }));
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      dispatch(updateOrderStatus({ orderId: currentOrder.id, status: 'DELIVERED' }));
+    }, eta - now);
+
+    return () => clearTimeout(timeoutId);
+  }, [currentOrder, dispatch]);
 
   const getStatusColor = (status) => {
     switch (status) {
