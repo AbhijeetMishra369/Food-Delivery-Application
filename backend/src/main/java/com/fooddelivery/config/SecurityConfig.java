@@ -34,7 +34,8 @@ public class SecurityConfig {
                 .requestMatchers("/restaurants/**").permitAll()
                 .requestMatchers("/categories/**").permitAll()
                 .requestMatchers("/menu-items/**").permitAll()
-                .requestMatchers("/h2-console/**").permitAll()
+                .requestMatchers("/actuator/**").permitAll()
+                // .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .anyRequest().authenticated()
             .and()
@@ -44,8 +45,7 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         
-        // Allow H2 console frame
-        http.headers().frameOptions().disable();
+        // Frame options can remain default in production
         
         return http.build();
     }

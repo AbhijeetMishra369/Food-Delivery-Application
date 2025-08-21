@@ -64,7 +64,8 @@ const RestaurantDetail = () => {
   const fetchMenuItems = async () => {
     setMenuLoading(true);
     try {
-      const response = await axios.get(`http://localhost:8080/api/menu-items/restaurant/${id}`);
+      const base = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
+      const response = await axios.get(`${base}/menu-items/restaurant/${id}`);
       setMenuItems(response.data);
     } catch (error) {
       console.error('Failed to fetch menu items:', error);
@@ -75,7 +76,8 @@ const RestaurantDetail = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/categories');
+      const base = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
+      const response = await axios.get(`${base}/categories`);
       setCategories(response.data);
     } catch (error) {
       console.error('Failed to fetch categories:', error);

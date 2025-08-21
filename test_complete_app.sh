@@ -173,13 +173,13 @@ fi
 echo -e "\n${BLUE}3. Database Testing${NC}"
 echo "---------------------"
 
-# Test 10: Test H2 console access
-echo "Testing H2 database console..."
-H2_RESPONSE=$(curl -s -I http://localhost:8080/api/h2-console | head -1)
-if echo "$H2_RESPONSE" | grep -q "200\|302"; then
-    print_test_result 0 "H2 database console accessible"
+# Test 10: Test backend health (MySQL-backed)
+echo "Testing backend health endpoint..."
+HEALTH_RESPONSE=$(curl -s http://localhost:8080/api/actuator/health | grep -o '"status":"UP"' || echo "")
+if [ ! -z "$HEALTH_RESPONSE" ]; then
+    print_test_result 0 "Backend health is UP"
 else
-    print_test_result 1 "H2 database console not accessible"
+    print_test_result 1 "Backend health endpoint not UP"
 fi
 
 echo -e "\n${BLUE}4. Application Features Summary${NC}"
@@ -193,7 +193,7 @@ echo "   • Category Management"
 echo "   • Order Processing"
 echo "   • Payment Integration (RazorPay)"
 echo "   • JWT Security"
-echo "   • H2 Database with Sample Data"
+echo "   • MySQL Database with Sample Data"
 echo "   • CORS Configuration"
 echo "   • Input Validation"
 
