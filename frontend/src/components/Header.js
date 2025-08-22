@@ -97,7 +97,12 @@ const Header = () => {
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           {user?.role === 'ADMIN' && (
-            <Button component={Link} to="/admin/restaurants" color="inherit">Admin</Button>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Button component={Link} to="/admin/restaurants" color="inherit">Restaurants</Button>
+              <Button component={Link} to="/admin/categories" color="inherit">Categories</Button>
+              <Button component={Link} to="/admin/menu-items" color="inherit">Menu Items</Button>
+              <Button component={Link} to="/admin/orders" color="inherit">Orders</Button>
+            </Box>
           )}
           {isAuthenticated ? (
             <>
