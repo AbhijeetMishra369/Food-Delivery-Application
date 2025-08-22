@@ -1,5 +1,6 @@
 /workspace/backend/src/main/java/com/fooddelivery/dto/AuthResponse.java
 /workspace/backend/src/main/java/com/fooddelivery/service/MenuItemService.java
+/workspace/backend/src/main/java/com/fooddelivery/dto/RestaurantRequest.java
 /workspace/backend/src/main/java/com/fooddelivery/controller/RestaurantController.java
 /workspace/backend/src/main/java/com/fooddelivery/repository/RestaurantRepository.java
 /workspace/backend/src/main/java/com/fooddelivery/dto/PaymentRequest.java
@@ -28,6 +29,7 @@
 /workspace/backend/src/main/java/com/fooddelivery/repository/OrderRepository.java
 /workspace/backend/src/main/java/com/fooddelivery/dto/RestaurantDto.java
 /workspace/backend/src/main/java/com/fooddelivery/dto/PaymentResponse.java
+/workspace/backend/src/main/java/com/fooddelivery/dto/MenuItemRequest.java
 /workspace/backend/src/main/java/com/fooddelivery/entity/Payment.java
 /workspace/backend/src/main/java/com/fooddelivery/exception/PaymentException.java
 /workspace/backend/src/main/java/com/fooddelivery/exception/BadRequestException.java

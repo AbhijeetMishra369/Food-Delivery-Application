@@ -1,6 +1,7 @@
 package com.fooddelivery.service;
 
 import com.fooddelivery.dto.RestaurantDto;
+import com.fooddelivery.dto.RestaurantRequest;
 import com.fooddelivery.entity.Restaurant;
 import com.fooddelivery.exception.NotFoundException;
 import com.fooddelivery.repository.RestaurantRepository;
@@ -108,6 +109,42 @@ public class RestaurantService {
 				.filter(r -> r.isActive() && r.isOpen())
 				.map(this::convertToDto)
 				.collect(Collectors.toList());
+	}
+	
+	public RestaurantDto createRestaurant(RestaurantRequest request) {
+		Restaurant restaurant = new Restaurant();
+		applyRequest(restaurant, request);
+		Restaurant saved = restaurantRepository.save(restaurant);
+		return convertToDto(saved);
+	}
+	
+	public RestaurantDto updateRestaurant(Long id, RestaurantRequest request) {
+		Restaurant restaurant = restaurantRepository.findById(id)
+				.orElseThrow(() -> new NotFoundException("Restaurant not found"));
+		applyRequest(restaurant, request);
+		Restaurant saved = restaurantRepository.save(restaurant);
+		return convertToDto(saved);
+	}
+	
+	public void deleteRestaurant(Long id) {
+		Restaurant restaurant = restaurantRepository.findById(id)
+				.orElseThrow(() -> new NotFoundException("Restaurant not found"));
+		restaurantRepository.delete(restaurant);
+	}
+	
+	private void applyRequest(Restaurant restaurant, RestaurantRequest request) {
+		restaurant.setName(request.getName());
+		restaurant.setDescription(request.getDescription());
+		restaurant.setAddress(request.getAddress());
+		restaurant.setPhone(request.getPhone());
+		restaurant.setEmail(request.getEmail());
+		restaurant.setCuisine(request.getCuisine());
+		restaurant.setImageUrl(request.getImageUrl());
+		restaurant.setDeliveryTime(request.getDeliveryTime());
+		restaurant.setDeliveryFee(request.getDeliveryFee());
+		restaurant.setMinimumOrder(request.getMinimumOrder());
+		if (request.getActive() != null) restaurant.setActive(request.getActive());
+		if (request.getOpen() != null) restaurant.setOpen(request.getOpen());
 	}
 	
 	private RestaurantDto convertToDto(Restaurant restaurant) {

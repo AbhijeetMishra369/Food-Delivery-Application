@@ -19,9 +19,11 @@ com/fooddelivery/entity/User$UserRole.class
 com/fooddelivery/config/SecurityConfig.class
 com/fooddelivery/dto/OrderRequest.class
 com/fooddelivery/dto/PaymentResponse.class
+com/fooddelivery/dto/RestaurantRequest.class
 com/fooddelivery/repository/CategoryRepository.class
 com/fooddelivery/service/RestaurantService.class
 com/fooddelivery/service/UserService.class
+com/fooddelivery/dto/MenuItemRequest.class
 com/fooddelivery/controller/MenuItemController.class
 com/fooddelivery/controller/PaymentController.class
 com/fooddelivery/service/PaymentService.class

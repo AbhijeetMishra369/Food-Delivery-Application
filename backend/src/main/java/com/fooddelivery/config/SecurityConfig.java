@@ -33,12 +33,9 @@ public class SecurityConfig {
 			.csrf().disable()
 			.authorizeHttpRequests()
 				.requestMatchers("/auth/**").permitAll()
-				.requestMatchers("/restaurants/**").permitAll()
-				.requestMatchers("/categories/**").permitAll()
-				.requestMatchers("/menu-items/**").permitAll()
-				.requestMatchers("/actuator/**").permitAll()
-				// .requestMatchers("/h2-console/**").permitAll()
-				.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+				.requestMatchers("/restaurants", "/restaurants/page", "/restaurants/search", "/restaurants/cuisine/**", "/restaurants/rating/**", "/restaurants/delivery-time/**").permitAll()
+				.requestMatchers("/menu-items/restaurant/**", "/menu-items/**/category/**", "/menu-items/**/search", "/menu-items/**/vegetarian", "/menu-items/**/spicy", "/menu-items/**/price-range").permitAll()
+				.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/actuator/**").permitAll()
 				.anyRequest().authenticated()
 			.and()
 				.sessionManagement()
@@ -46,8 +43,6 @@ public class SecurityConfig {
 			.and()
 				.authenticationProvider(authenticationProvider)
 				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-		
-		// Frame options can remain default in production
 		
 		return http.build();
 	}
