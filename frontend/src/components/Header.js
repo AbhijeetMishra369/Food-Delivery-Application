@@ -14,11 +14,13 @@ import {
   MenuItem,
   InputBase,
   Paper,
+  Chip,
 } from '@mui/material';
 import {
   ShoppingCart as CartIcon,
   Restaurant as RestaurantIcon,
   Person as PersonIcon,
+  LocationOn as LocationIcon,
 } from '@mui/icons-material';
 import { logout } from '../store/slices/authSlice';
 
@@ -51,7 +53,7 @@ const Header = () => {
   };
 
   return (
-    <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    <AppBar position="fixed" elevation={1} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, bgcolor: 'background.paper', color: 'text.primary', borderBottom: '1px solid', borderColor: 'divider' }}>
       <Toolbar sx={{ gap: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Box sx={{
@@ -77,6 +79,7 @@ const Header = () => {
           >
             Food Delivery
           </Typography>
+          <Chip icon={<LocationIcon />} label="Bengaluru" size="small" sx={{ ml: 1 }} />
         </Box>
 
         <Box sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}>
@@ -150,12 +153,12 @@ const Header = () => {
               </Button>
               <Button
                 variant="contained"
-                color="secondary"
+                color="primary"
                 component={Link}
                 to="/register"
                 sx={{ textTransform: 'none' }}
               >
-                Register
+                Sign up
               </Button>
             </>
           )}

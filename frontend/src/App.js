@@ -16,6 +16,7 @@ import RestaurantDetail from './pages/RestaurantDetail';
 import Cart from './pages/Cart';
 import Orders from './pages/Orders';
 import OrderDetail from './pages/OrderDetail';
+import Footer from './components/Footer';
 
 // Create theme (Swiggy-like palette & components)
 const theme = createTheme({
@@ -80,7 +81,7 @@ function App() {
         <ToastProvider>
           <Router>
             <Header />
-            <div style={{ paddingTop: 72 }}>
+            <div style={{ paddingTop: 72, minHeight: 'calc(100vh - 72px)' }}>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
@@ -91,6 +92,7 @@ function App() {
                 <Route path="/orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
               </Routes>
             </div>
+            <Footer />
           </Router>
         </ToastProvider>
       </ThemeProvider>
