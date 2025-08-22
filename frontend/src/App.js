@@ -18,6 +18,7 @@ import Orders from './pages/Orders';
 import OrderDetail from './pages/OrderDetail';
 import Footer from './components/Footer';
 import NotAuthorized from './pages/NotAuthorized';
+import AdminRestaurants from './pages/AdminRestaurants';
 
 // Create theme (Swiggy-like palette & components)
 const theme = createTheme({
@@ -91,6 +92,7 @@ function App() {
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
                 <Route path="/orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
+                <Route path="/admin/restaurants" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminRestaurants /></ProtectedRoute>} />
                 <Route path="/not-authorized" element={<NotAuthorized />} />
               </Routes>
             </div>

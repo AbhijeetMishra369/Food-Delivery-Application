@@ -96,6 +96,9 @@ const Header = () => {
         </Box>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          {user?.role === 'ADMIN' && (
+            <Button component={Link} to="/admin/restaurants" color="inherit">Admin</Button>
+          )}
           {isAuthenticated ? (
             <>
               <IconButton
