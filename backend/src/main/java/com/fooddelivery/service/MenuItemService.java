@@ -2,6 +2,7 @@ package com.fooddelivery.service;
 
 import com.fooddelivery.dto.MenuItemDto;
 import com.fooddelivery.entity.MenuItem;
+import com.fooddelivery.exception.NotFoundException;
 import com.fooddelivery.repository.MenuItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -59,7 +60,7 @@ public class MenuItemService {
     
     public MenuItemDto getMenuItemById(Long id) {
         MenuItem menuItem = menuItemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Menu item not found"));
+                .orElseThrow(() -> new NotFoundException("Menu item not found"));
         return convertToDto(menuItem);
     }
     

@@ -3,6 +3,7 @@ com/fooddelivery/dto/ApiError$ApiErrorBuilder.class
 com/fooddelivery/entity/User.class
 com/fooddelivery/entity/Order$PaymentStatus.class
 com/fooddelivery/dto/RestaurantDto.class
+com/fooddelivery/exception/NotFoundException.class
 com/fooddelivery/security/JwtUtil.class
 com/fooddelivery/entity/Payment$PaymentStatus.class
 com/fooddelivery/controller/OrderController.class
@@ -28,6 +29,7 @@ com/fooddelivery/config/DataInitializer.class
 com/fooddelivery/config/ApplicationConfig.class
 com/fooddelivery/controller/CategoryController$CategoryDto.class
 com/fooddelivery/dto/PaymentRequest.class
+com/fooddelivery/exception/PaymentException.class
 com/fooddelivery/repository/RestaurantRepository.class
 com/fooddelivery/controller/AuthController.class
 com/fooddelivery/dto/OrderRequest$OrderItemRequest.class
@@ -35,6 +37,7 @@ com/fooddelivery/dto/MenuItemDto.class
 com/fooddelivery/repository/MenuItemRepository.class
 com/fooddelivery/entity/Category.class
 com/fooddelivery/entity/OrderItem.class
+com/fooddelivery/exception/BadRequestException.class
 com/fooddelivery/entity/Order$OrderStatus.class
 com/fooddelivery/FoodDeliveryApplication.class
 com/fooddelivery/dto/AuthResponse.class

@@ -2,6 +2,8 @@ package com.fooddelivery.config;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fooddelivery.dto.ApiError;
+import com.fooddelivery.exception.NotFoundException;
+import com.fooddelivery.exception.PaymentException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -85,6 +87,30 @@ public class GlobalExceptionHandler {
 				.path(request.getRequestURI())
 				.build();
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+	}
+	
+	@ExceptionHandler(NotFoundException.class)
+	public ResponseEntity<ApiError> handleNotFound(NotFoundException ex, HttpServletRequest request) {
+		ApiError body = ApiError.builder()
+				.timestamp(LocalDateTime.now())
+				.status(HttpStatus.NOT_FOUND.value())
+				.error(HttpStatus.NOT_FOUND.getReasonPhrase())
+				.message(ex.getMessage())
+				.path(request.getRequestURI())
+				.build();
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+	}
+	
+	@ExceptionHandler(PaymentException.class)
+	public ResponseEntity<ApiError> handlePayment(PaymentException ex, HttpServletRequest request) {
+		ApiError body = ApiError.builder()
+				.timestamp(LocalDateTime.now())
+				.status(HttpStatus.BAD_REQUEST.value())
+				.error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+				.message(ex.getMessage())
+				.path(request.getRequestURI())
+				.build();
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
 	}
 	
 	@ExceptionHandler(IllegalArgumentException.class)
