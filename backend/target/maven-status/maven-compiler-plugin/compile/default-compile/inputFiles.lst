@@ -12,8 +12,10 @@
 /workspace/backend/src/main/java/com/fooddelivery/repository/MenuItemRepository.java
 /workspace/backend/src/main/java/com/fooddelivery/repository/UserRepository.java
 /workspace/backend/src/main/java/com/fooddelivery/controller/MenuItemController.java
+/workspace/backend/src/main/java/com/fooddelivery/dto/ApiError.java
 /workspace/backend/src/main/java/com/fooddelivery/config/DataInitializer.java
 /workspace/backend/src/main/java/com/fooddelivery/entity/Order.java
+/workspace/backend/src/main/java/com/fooddelivery/config/GlobalExceptionHandler.java
 /workspace/backend/src/main/java/com/fooddelivery/service/UserService.java
 /workspace/backend/src/main/java/com/fooddelivery/entity/Restaurant.java
 /workspace/backend/src/main/java/com/fooddelivery/config/SecurityConfig.java
