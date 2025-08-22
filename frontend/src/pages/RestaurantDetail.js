@@ -8,10 +8,10 @@ import { addToCart } from '../store/slices/cartSlice';
 
 const MenuItemSkeleton = () => (
 	<Card>
-		<Skeleton variant="rectangular" height={120} />
+		<Skeleton variant="rectangular" height={120} animation="wave" />
 		<CardContent>
-			<Skeleton width="70%" />
-			<Skeleton width="50%" />
+			<Skeleton width="70%" animation="wave" />
+			<Skeleton width="50%" animation="wave" />
 		</CardContent>
 	</Card>
 );
@@ -59,8 +59,8 @@ const RestaurantDetail = () => {
 				<Container sx={{ py: 3 }}>
 					{loading ? (
 						<>
-							<Skeleton variant="text" width={260} height={48} />
-							<Skeleton variant="text" width={360} />
+							<Skeleton variant="text" width={260} height={48} animation="wave" />
+							<Skeleton variant="text" width={360} animation="wave" />
 						</>
 					) : (
 						restaurant && (

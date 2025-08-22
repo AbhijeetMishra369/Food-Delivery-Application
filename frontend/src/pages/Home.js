@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { Container, Grid, Typography, Skeleton, Box, Chip, Paper, Alert } from '@mui/material';
 import { Link } from 'react-router-dom';
 import api from '../api/client';
@@ -9,36 +9,71 @@ import OffersCarousel from '../components/OffersCarousel';
 
 const RestaurantCardSkeleton = () => (
 	<Paper sx={{ borderRadius: 2, overflow: 'hidden' }}>
-		<Skeleton variant="rectangular" height={160} />
+		<Skeleton variant="rectangular" height={160} animation="wave" />
 		<Box sx={{ p: 2 }}>
-			<Skeleton width="60%" />
-			<Skeleton width="40%" />
-			<Skeleton width="80%" />
+			<Skeleton width="60%" animation="wave" />
+			<Skeleton width="40%" animation="wave" />
+			<Skeleton width="80%" animation="wave" />
 		</Box>
 	</Paper>
 );
 
+const PAGE_SIZE = 12;
+
 const Home = () => {
 	const [restaurants, setRestaurants] = useState([]);
-	const [loading, setLoading] = useState(true);
+	const [initialLoading, setInitialLoading] = useState(true);
+	const [loadingPage, setLoadingPage] = useState(false);
+	const [page, setPage] = useState(0);
+	const [hasMore, setHasMore] = useState(true);
 	const [category, setCategory] = useState('All');
 	const [onlyFast, setOnlyFast] = useState(false);
 	const [minRating, setMinRating] = useState(0);
 	const { showToast } = useToast();
+	const sentinelRef = useRef(null);
+	
+	const isFiltering = category !== 'All' || onlyFast || minRating > 0;
+	
+	const fetchPage = useCallback(async (pageToLoad) => {
+		setLoadingPage(true);
+		try {
+			const res = await api.get('/restaurants/page', { params: { page: pageToLoad, size: PAGE_SIZE } });
+			const content = res.data?.content || [];
+			setRestaurants(prev => {
+				const existingIds = new Set(prev.map(r => r.id));
+				const merged = [...prev, ...content.filter(r => !existingIds.has(r.id))];
+				return merged;
+			});
+			setHasMore(!(res.data?.last === true) && content.length > 0);
+			setPage(pageToLoad + 1);
+		} catch (err) {
+			showToast(err.message || 'Failed to load restaurants', 'error');
+			setHasMore(false);
+		} finally {
+			setInitialLoading(false);
+			setLoadingPage(false);
+		}
+	}, [showToast]);
 	
 	useEffect(() => {
-		const fetchRestaurants = async () => {
-			try {
-				const res = await api.get('/restaurants');
-				setRestaurants(res.data);
-			} catch (err) {
-				showToast(err.message || 'Failed to load restaurants', 'error');
-			} finally {
-				setLoading(false);
+		// initial page load
+		fetchPage(0);
+	}, [fetchPage]);
+	
+	useEffect(() => {
+		// Intersection observer for infinite scroll when not filtering
+		if (isFiltering) return;
+		const el = sentinelRef.current;
+		if (!el) return;
+		const observer = new IntersectionObserver((entries) => {
+			const first = entries[0];
+			if (first.isIntersecting && hasMore && !loadingPage) {
+				fetchPage(page);
 			}
-		};
-		fetchRestaurants();
-	}, [showToast]);
+		}, { rootMargin: '200px' });
+		observer.observe(el);
+		return () => observer.disconnect();
+	}, [isFiltering, hasMore, loadingPage, page, fetchPage]);
 	
 	const categories = useMemo(() => {
 		const set = new Set(['All']);
@@ -78,8 +113,11 @@ const Home = () => {
 			</Box>
 			<Container sx={{ py: 4 }}>
 				<Typography variant="h5" sx={{ mb: 2, fontWeight: 800 }}>Top restaurants near you</Typography>
+				{isFiltering && (
+					<Alert severity="info" sx={{ mb: 2 }}>Filters applied. Scroll will show matching items from loaded results. Clear filters to load more.</Alert>
+				)}
 				<Grid container spacing={2}>
-					{loading
+					{initialLoading
 						? Array.from({ length: 8 }).map((_, i) => (
 							<Grid item xs={12} sm={6} md={3} key={i}>
 								<RestaurantCardSkeleton />
@@ -91,6 +129,20 @@ const Home = () => {
 							</Grid>
 						))}
 				</Grid>
+				{!isFiltering && hasMore && (
+					<Box ref={sentinelRef} sx={{ height: 1, mt: 2 }} />
+				)}
+				{loadingPage && (
+					<Box sx={{ mt: 2 }}>
+						<Grid container spacing={2}>
+							{Array.from({ length: 4 }).map((_, i) => (
+								<Grid item xs={12} sm={6} md={3} key={`sk-${i}`}>
+									<RestaurantCardSkeleton />
+								</Grid>
+							))}
+						</Grid>
+					</Box>
+				)}
 			</Container>
 		</>
 	);
