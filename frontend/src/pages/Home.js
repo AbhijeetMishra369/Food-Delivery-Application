@@ -5,6 +5,7 @@ import api from '../api/client';
 import { useToast } from '../components/ToastProvider';
 import RestaurantCard from '../components/RestaurantCard';
 import CategoryCarousel from '../components/CategoryCarousel';
+import OffersCarousel from '../components/OffersCarousel';
 
 const RestaurantCardSkeleton = () => (
 	<Paper sx={{ borderRadius: 2, overflow: 'hidden' }}>
@@ -70,6 +71,9 @@ const Home = () => {
 						</Box>
 					</Box>
 					<CategoryCarousel categories={categories} activeCategory={category} onSelect={setCategory} />
+					<Box sx={{ mt: 2 }}>
+						<OffersCarousel />
+					</Box>
 				</Container>
 			</Box>
 			<Container sx={{ py: 4 }}>
