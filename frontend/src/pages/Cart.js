@@ -79,7 +79,8 @@ const Cart = () => {
       // If online payment, create Razorpay order and open checkout
       if (paymentMethod === 'ONLINE' && created?.id) {
         const token = localStorage.getItem('token');
-        const paymentRes = await axios.post(`http://localhost:8080/api/payments/create-order/${created.id}`, {}, {
+        const base = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
+        const paymentRes = await axios.post(`${base}/payments/create-order/${created.id}`, {}, {
           headers: token ? { Authorization: `Bearer ${token}` } : {}
         });
         const { razorpayOrderId, amount, keyId } = paymentRes.data || {};
@@ -93,7 +94,8 @@ const Cart = () => {
           order_id: razorpayOrderId,
           handler: async function (response) {
             try {
-              await axios.post('http://localhost:8080/api/payments/verify', {
+              const base = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api';
+              await axios.post(`${base}/payments/verify`, {
                 orderId: created.id,
                 razorpayOrderId: response.razorpay_order_id,
                 razorpayPaymentId: response.razorpay_payment_id,
