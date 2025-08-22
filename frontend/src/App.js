@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { store } from './store/store';
+import { ToastProvider } from './components/ToastProvider';
 
 // Components
 import Header from './components/Header';
@@ -46,7 +47,7 @@ const theme = createTheme({
     ...Array(22).fill('0 4px 14px rgba(0,0,0,0.08)')
   ],
   typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: 'Inter, Roboto, Helvetica, Arial, sans-serif',
     h4: {
       fontWeight: 700,
       letterSpacing: '-0.02em',
@@ -57,66 +58,18 @@ const theme = createTheme({
     },
     button: {
       fontWeight: 600,
+      textTransform: 'none'
     }
   },
   components: {
-    MuiAppBar: {
-      styleOverrides: {
-        root: {
-          backgroundColor: '#ffffff',
-          color: '#282c3f',
-          borderBottom: '1px solid rgba(40,44,63,0.12)'
-        }
-      }
-    },
     MuiButton: {
       styleOverrides: {
         root: {
-          textTransform: 'none',
-          borderRadius: 10,
-          paddingInline: 18,
-          height: 42,
-          boxShadow: '0 2px 6px rgba(252,128,25,0.15)',
-          '&:hover': {
-            transform: 'translateY(-1px)',
-            boxShadow: '0 8px 18px rgba(252,128,25,0.25)'
-          }
-        },
-        containedPrimary: {
-          color: '#fff'
-        }
-      },
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          borderRadius: 14,
-          overflow: 'hidden',
-          transition: 'transform 200ms ease, box-shadow 200ms ease',
-          '&:hover': {
-            transform: 'translateY(-4px)',
-            boxShadow: '0 12px 28px rgba(0,0,0,0.12)'
-          }
-        },
-      },
-    },
-    MuiChip: {
-      styleOverrides: {
-        root: {
-          borderRadius: 8,
-          backgroundColor: '#f0f0f3',
+          borderRadius: 10
         }
       }
     },
-    MuiAvatar: {
-      styleOverrides: {
-        root: {
-          backgroundColor: '#ffe8d6',
-          color: '#fc8019'
-        }
-      }
-    }
-  },
+  }
 });
 
 function App() {
@@ -124,25 +77,22 @@ function App() {
     <Provider store={store}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Router>
-          <div className="App">
+        <ToastProvider>
+          <Router>
             <Header />
-            <main style={{ paddingTop: '64px', minHeight: 'calc(100vh - 64px)' }}>
+            <div style={{ paddingTop: 72 }}>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/restaurant/:id" element={<RestaurantDetail />} />
-
-                <Route element={<ProtectedRoute />}>
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/orders" element={<Orders />} />
-                  <Route path="/orders/:id" element={<OrderDetail />} />
-                </Route>
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+                <Route path="/orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
               </Routes>
-            </main>
-          </div>
-        </Router>
+            </div>
+          </Router>
+        </ToastProvider>
       </ThemeProvider>
     </Provider>
   );
