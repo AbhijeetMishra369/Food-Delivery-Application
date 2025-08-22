@@ -37,6 +37,7 @@ public class GlobalExceptionHandler {
 				.error(HttpStatus.BAD_REQUEST.getReasonPhrase())
 				.message("Please correct the highlighted fields and try again.")
 				.path(request.getRequestURI())
+				.code("VALIDATION_ERROR")
 				.fieldErrors(fieldErrors)
 				.build();
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
@@ -52,6 +53,7 @@ public class GlobalExceptionHandler {
 				.error(HttpStatus.BAD_REQUEST.getReasonPhrase())
 				.message("Invalid input. Please review and try again.")
 				.path(request.getRequestURI())
+				.code("CONSTRAINT_VIOLATION")
 				.fieldErrors(fieldErrors)
 				.build();
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
@@ -60,11 +62,13 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	public ResponseEntity<ApiError> handleNotReadable(HttpMessageNotReadableException ex, HttpServletRequest request) {
 		String message = "Malformed request body.";
+		String code = "MALFORMED_REQUEST";
 		Throwable cause = ex.getCause();
 		if (cause instanceof InvalidFormatException ife) {
 			String pathRef = ife.getPath().stream().map(ref -> ref.getFieldName()).collect(Collectors.joining("."));
 			if (pathRef.endsWith("role")) {
 				message = "Role must be one of: USER, ADMIN";
+				code = "INVALID_ROLE";
 			}
 		}
 		ApiError body = ApiError.builder()
@@ -73,6 +77,7 @@ public class GlobalExceptionHandler {
 				.error(HttpStatus.BAD_REQUEST.getReasonPhrase())
 				.message(message)
 				.path(request.getRequestURI())
+				.code(code)
 				.build();
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
 	}
@@ -85,6 +90,7 @@ public class GlobalExceptionHandler {
 				.error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
 				.message("Invalid email or password.")
 				.path(request.getRequestURI())
+				.code("AUTHENTICATION_FAILED")
 				.build();
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
 	}
@@ -97,6 +103,7 @@ public class GlobalExceptionHandler {
 				.error(HttpStatus.NOT_FOUND.getReasonPhrase())
 				.message(ex.getMessage())
 				.path(request.getRequestURI())
+				.code("RESOURCE_NOT_FOUND")
 				.build();
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
 	}
@@ -109,6 +116,7 @@ public class GlobalExceptionHandler {
 				.error(HttpStatus.BAD_REQUEST.getReasonPhrase())
 				.message(ex.getMessage())
 				.path(request.getRequestURI())
+				.code("PAYMENT_ERROR")
 				.build();
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
 	}
@@ -121,6 +129,7 @@ public class GlobalExceptionHandler {
 				.error(HttpStatus.BAD_REQUEST.getReasonPhrase())
 				.message(ex.getMessage())
 				.path(request.getRequestURI())
+				.code("BAD_REQUEST")
 				.build();
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
 	}
@@ -133,6 +142,7 @@ public class GlobalExceptionHandler {
 				.error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
 				.message("Something went wrong. Please try again.")
 				.path(request.getRequestURI())
+				.code("INTERNAL_SERVER_ERROR")
 				.build();
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
 	}

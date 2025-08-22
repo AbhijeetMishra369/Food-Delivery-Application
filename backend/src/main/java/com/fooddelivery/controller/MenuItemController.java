@@ -4,6 +4,10 @@ import com.fooddelivery.dto.MenuItemDto;
 import com.fooddelivery.dto.MenuItemRequest;
 import com.fooddelivery.service.MenuItemService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +27,17 @@ public class MenuItemController {
 	public ResponseEntity<List<MenuItemDto>> getMenuItemsByRestaurant(@PathVariable Long restaurantId) {
 		List<MenuItemDto> menuItems = menuItemService.getMenuItemsByRestaurant(restaurantId);
 		return ResponseEntity.ok(menuItems);
+	}
+	
+	@GetMapping("/restaurant/{restaurantId}/page")
+	public ResponseEntity<Page<MenuItemDto>> getMenuItemsByRestaurantPage(@PathVariable Long restaurantId, Pageable pageable) {
+		List<MenuItemDto> list = menuItemService.getMenuItemsByRestaurant(restaurantId);
+		int page = pageable.getPageNumber();
+		int size = pageable.getPageSize();
+		int start = Math.min(page * size, list.size());
+		int end = Math.min(start + size, list.size());
+		Page<MenuItemDto> pageRes = new PageImpl<>(list.subList(start, end), PageRequest.of(page, size), list.size());
+		return ResponseEntity.ok(pageRes);
 	}
 	
 	@GetMapping("/restaurant/{restaurantId}/category/{categoryId}")

@@ -12,6 +12,7 @@ import {
   CircularProgress,
   Link as MuiLink,
   Grid,
+  MenuItem,
 } from '@mui/material';
 import { register, clearError } from '../store/slices/authSlice';
 
@@ -28,9 +29,11 @@ const Register = () => {
     confirmPassword: '',
     phone: '',
     address: '',
+    role: 'USER',
   });
   
   const [validationErrors, setValidationErrors] = useState({});
+  const [serverFieldErrors, setServerFieldErrors] = useState({});
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -43,6 +46,19 @@ const Register = () => {
       dispatch(clearError());
     };
   }, [dispatch]);
+
+  useEffect(() => {
+    // Map structured ApiError to UI
+    if (error && typeof error === 'object') {
+      if (error.fieldErrors) {
+        setServerFieldErrors(error.fieldErrors);
+      } else {
+        setServerFieldErrors({});
+      }
+    } else {
+      setServerFieldErrors({});
+    }
+  }, [error]);
 
   const validateForm = () => {
     const errors = {};
@@ -84,6 +100,10 @@ const Register = () => {
     } else if (formData.address.length < 10) {
       errors.address = 'Address must be at least 10 characters';
     }
+
+    if (!formData.role || !['USER', 'ADMIN'].includes(formData.role)) {
+      errors.role = 'Please select a valid role';
+    }
     
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
@@ -103,6 +123,13 @@ const Register = () => {
         [name]: ''
       }));
     }
+    // Clear server field error as user edits that field
+    if (serverFieldErrors[name]) {
+      setServerFieldErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -115,6 +142,15 @@ const Register = () => {
         navigate('/login', { replace: true, state: { registeredEmail: formData.email } });
       }
     }
+  };
+
+  const friendlyServerMessage = () => {
+    if (!error) return null;
+    if (typeof error === 'string') return error;
+    if (error.message) return error.message;
+    if (error.code === 'AUTHENTICATION_FAILED') return 'Invalid email or password.';
+    if (error.code === 'VALIDATION_ERROR') return 'Please fix the highlighted fields.';
+    return 'Something went wrong. Please try again.';
   };
 
   return (
@@ -130,7 +166,7 @@ const Register = () => {
 
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>
-            {error}
+            {friendlyServerMessage()}
           </Alert>
         )}
 
@@ -143,8 +179,8 @@ const Register = () => {
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleChange}
-                error={!!validationErrors.firstName}
-                helperText={validationErrors.firstName}
+                error={!!(validationErrors.firstName || serverFieldErrors.firstName)}
+                helperText={validationErrors.firstName || serverFieldErrors.firstName}
                 margin="normal"
                 required
                 autoComplete="given-name"
@@ -158,8 +194,8 @@ const Register = () => {
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleChange}
-                error={!!validationErrors.lastName}
-                helperText={validationErrors.lastName}
+                error={!!(validationErrors.lastName || serverFieldErrors.lastName)}
+                helperText={validationErrors.lastName || serverFieldErrors.lastName}
                 margin="normal"
                 required
                 autoComplete="family-name"
@@ -174,8 +210,8 @@ const Register = () => {
                 type="email"
                 value={formData.email}
                 onChange={handleChange}
-                error={!!validationErrors.email}
-                helperText={validationErrors.email}
+                error={!!(validationErrors.email || serverFieldErrors.email)}
+                helperText={validationErrors.email || serverFieldErrors.email}
                 margin="normal"
                 required
                 autoComplete="email"
@@ -190,8 +226,8 @@ const Register = () => {
                 type="password"
                 value={formData.password}
                 onChange={handleChange}
-                error={!!validationErrors.password}
-                helperText={validationErrors.password}
+                error={!!(validationErrors.password || serverFieldErrors.password)}
+                helperText={validationErrors.password || serverFieldErrors.password}
                 margin="normal"
                 required
                 autoComplete="new-password"
@@ -221,8 +257,8 @@ const Register = () => {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                error={!!validationErrors.phone}
-                helperText={validationErrors.phone}
+                error={!!(validationErrors.phone || serverFieldErrors.phone)}
+                helperText={validationErrors.phone || serverFieldErrors.phone}
                 margin="normal"
                 required
                 autoComplete="tel"
@@ -239,13 +275,31 @@ const Register = () => {
                 rows={3}
                 value={formData.address}
                 onChange={handleChange}
-                error={!!validationErrors.address}
-                helperText={validationErrors.address}
+                error={!!(validationErrors.address || serverFieldErrors.address)}
+                helperText={validationErrors.address || serverFieldErrors.address}
                 margin="normal"
                 required
                 autoComplete="street-address"
                 placeholder="Enter your full delivery address"
               />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                select
+                fullWidth
+                label="Role"
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                error={!!(validationErrors.role || serverFieldErrors.role)}
+                helperText={validationErrors.role || serverFieldErrors.role || 'Select USER for regular account'}
+                margin="normal"
+                required
+              >
+                <MenuItem value="USER">User</MenuItem>
+                <MenuItem value="ADMIN">Admin</MenuItem>
+              </TextField>
             </Grid>
           </Grid>
           
@@ -259,15 +313,11 @@ const Register = () => {
           >
             {loading ? <CircularProgress size={24} /> : 'Create Account'}
           </Button>
-          
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography variant="body2" color="text.secondary">
-              Already have an account?{' '}
-              <MuiLink component={Link} to="/login" variant="body2">
-                Sign in here
-              </MuiLink>
-            </Typography>
-          </Box>
+
+          <Typography variant="body2" align="center">
+            Already have an account?{' '}
+            <MuiLink component={Link} to="/login">Sign in</MuiLink>
+          </Typography>
         </Box>
       </Paper>
     </Container>
