@@ -20,7 +20,19 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
 	(response) => response,
 	(error) => {
+		const status = error.response?.status;
 		const data = error.response?.data;
+		if (status === 401) {
+			localStorage.removeItem('token');
+			const from = window.location.pathname + window.location.search;
+			if (!from.startsWith('/login')) {
+				window.location.href = `/login?from=${encodeURIComponent(from)}`;
+			}
+			return Promise.reject({ message: 'Please sign in to continue.', code: 'AUTH_REQUIRED' });
+		}
+		if (status === 403) {
+			return Promise.reject({ message: "You don't have permission to perform this action.", code: 'FORBIDDEN' });
+		}
 		if (data && typeof data === 'object') {
 			return Promise.reject({
 				message: data.message || 'Something went wrong',

@@ -37,6 +37,7 @@ const Cart = () => {
   const [showOrderDialog, setShowOrderDialog] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('CASH_ON_DELIVERY');
   const [orderError, setOrderError] = useState('');
+  const [errors, setErrors] = useState({ address: '', phone: '' });
 
   const handleQuantityChange = (itemId, newQuantity) => {
     if (newQuantity <= 0) {
@@ -46,17 +47,31 @@ const Cart = () => {
     }
   };
 
+  const validateFields = () => {
+    const newErrors = { address: '', phone: '' };
+    if (!deliveryAddress.trim()) {
+      newErrors.address = 'Please enter your full delivery address.';
+    } else if (deliveryAddress.trim().length < 10) {
+      newErrors.address = 'Address should be at least 10 characters.';
+    }
+    if (!deliveryPhone.trim()) {
+      newErrors.phone = 'Please enter your phone number.';
+    } else if (!/^\d{10}$/.test(deliveryPhone.trim())) {
+      newErrors.phone = 'Phone number must be 10 digits.';
+    }
+    setErrors(newErrors);
+    return !newErrors.address && !newErrors.phone;
+  };
+
   const handlePlaceOrder = () => {
     if (!isAuthenticated) {
       navigate('/login');
       return;
     }
-
-    if (!deliveryAddress.trim() || !deliveryPhone.trim()) {
-      setOrderError('Please fill in all required fields');
+    if (!validateFields()) {
+      setOrderError('Please fix the highlighted fields.');
       return;
     }
-
     setOrderError('');
     setShowOrderDialog(true);
   };
@@ -127,9 +142,11 @@ const Cart = () => {
         navigate(created?.id ? `/orders/${created.id}` : '/orders');
       }
     } catch (error) {
-      setOrderError(error || 'Failed to place order');
+      setOrderError(error?.message || 'Failed to place order');
     }
   };
+
+  const isPlaceOrderDisabled = loading || items.length === 0 || !deliveryAddress.trim() || !/^\d{10}$/.test(deliveryPhone.trim());
 
   if (items.length === 0) {
     return (
@@ -233,9 +250,12 @@ const Cart = () => {
                   rows={3}
                   value={deliveryAddress}
                   onChange={(e) => setDeliveryAddress(e.target.value)}
+                  onBlur={validateFields}
                   margin="normal"
                   required
                   placeholder="Enter your delivery address"
+                  error={!!errors.address}
+                  helperText={errors.address}
                 />
                 
                 <TextField
@@ -243,9 +263,12 @@ const Cart = () => {
                   label="Phone Number"
                   value={deliveryPhone}
                   onChange={(e) => setDeliveryPhone(e.target.value)}
+                  onBlur={validateFields}
                   margin="normal"
                   required
                   placeholder="1234567890"
+                  error={!!errors.phone}
+                  helperText={errors.phone}
                 />
                 
                 <TextField
@@ -285,7 +308,7 @@ const Cart = () => {
                 variant="contained"
                 size="large"
                 onClick={handlePlaceOrder}
-                disabled={loading}
+                disabled={isPlaceOrderDisabled}
                 sx={{ mt: 2 }}
               >
                 {loading ? <CircularProgress size={24} /> : 'Place Order'}

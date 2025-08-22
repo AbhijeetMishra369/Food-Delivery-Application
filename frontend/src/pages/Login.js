@@ -19,7 +19,10 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { loading, error, isAuthenticated } = useSelector((state) => state.auth);
-  const from = location.state?.from?.pathname || '/';
+  const searchParams = new URLSearchParams(location.search);
+  const queryFrom = searchParams.get('from');
+  const stateFrom = location.state?.from?.pathname;
+  const from = queryFrom || stateFrom || '/';
   
   const [formData, setFormData] = useState({
     email: '',
@@ -83,6 +86,16 @@ const Login = () => {
     }
   };
 
+  const friendlyServerMessage = () => {
+    if (!error) return null;
+    if (typeof error === 'string') return error;
+    if (error.message) return error.message;
+    if (error.code === 'AUTHENTICATION_FAILED') return 'Invalid email or password.';
+    if (error.code === 'AUTH_REQUIRED') return 'Please sign in to continue.';
+    if (error.code === 'FORBIDDEN') return "You don't have permission to perform this action.";
+    return 'Something went wrong. Please try again.';
+  };
+
   return (
     <Container maxWidth="sm" sx={{ py: 4 }}>
       <Paper elevation={3} sx={{ p: 4 }}>
@@ -96,7 +109,7 @@ const Login = () => {
 
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>
-            {error}
+            {friendlyServerMessage()}
           </Alert>
         )}
 
