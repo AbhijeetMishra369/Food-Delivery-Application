@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Container, Grid, Typography, Skeleton, Box, Chip, Paper } from '@mui/material';
+import { Container, Grid, Typography, Skeleton, Box, Chip, Paper, Alert } from '@mui/material';
 import { Link } from 'react-router-dom';
 import api from '../api/client';
 import { useToast } from '../components/ToastProvider';
@@ -21,6 +21,8 @@ const Home = () => {
 	const [restaurants, setRestaurants] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [category, setCategory] = useState('All');
+	const [onlyFast, setOnlyFast] = useState(false);
+	const [minRating, setMinRating] = useState(0);
 	const { showToast } = useToast();
 	
 	useEffect(() => {
@@ -44,14 +46,18 @@ const Home = () => {
 	}, [restaurants]);
 	
 	const filtered = useMemo(() => {
-		if (category === 'All') return restaurants;
-		return restaurants.filter(r => r.cuisine === category);
-	}, [restaurants, category]);
+		let list = restaurants;
+		if (category !== 'All') list = list.filter(r => r.cuisine === category);
+		if (onlyFast) list = list.filter(r => r.deliveryTime <= 30);
+		if (minRating > 0) list = list.filter(r => (r.rating || 0) >= minRating);
+		return list;
+	}, [restaurants, category, onlyFast, minRating]);
 	
 	return (
 		<>
 			<Box sx={{ bgcolor: 'background.paper', borderBottom: '1px solid', borderColor: 'divider' }}>
 				<Container sx={{ py: 4 }}>
+					<Alert variant="outlined" severity="success" sx={{ mb: 2 }}>UPTO 60% OFF on select restaurants near you!</Alert>
 					<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
 						<Box>
 							<Typography variant="h4" sx={{ fontWeight: 800, letterSpacing: '-0.02em' }}>Order food from top restaurants</Typography>
@@ -59,8 +65,8 @@ const Home = () => {
 						</Box>
 						<Box>
 							<Chip label="Veg" variant="outlined" sx={{ mr: 1 }} />
-							<Chip label="Rating 4.0+" variant="outlined" sx={{ mr: 1 }} />
-							<Chip label="Fast Delivery" variant="outlined" />
+							<Chip label="Rating 4.0+" variant={minRating >= 4 ? 'filled' : 'outlined'} color={minRating >= 4 ? 'primary' : 'default'} onClick={() => setMinRating(minRating >= 4 ? 0 : 4)} sx={{ mr: 1 }} />
+							<Chip label="Fast Delivery" variant={onlyFast ? 'filled' : 'outlined'} color={onlyFast ? 'primary' : 'default'} onClick={() => setOnlyFast(v => !v)} />
 						</Box>
 					</Box>
 					<CategoryCarousel categories={categories} activeCategory={category} onSelect={setCategory} />

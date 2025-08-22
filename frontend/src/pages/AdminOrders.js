@@ -9,16 +9,25 @@ const paymentStatuses = ['PENDING','COMPLETED','FAILED','REFUNDED'];
 const AdminOrders = () => {
 	const { showToast } = useToast();
 	const [orders, setOrders] = useState([]);
+	const [restaurants, setRestaurants] = useState([]);
+	const [selectedRestaurant, setSelectedRestaurant] = useState('');
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState('');
 
-	const fetchOrders = async () => {
+	const fetchRestaurants = async () => {
+		const res = await api.get('/restaurants');
+		setRestaurants(res.data || []);
+		if ((res.data || []).length > 0) {
+			setSelectedRestaurant(res.data[0].id);
+		}
+	};
+
+	const fetchOrders = async (restaurantId) => {
+		if (!restaurantId) { setOrders([]); return; }
 		setLoading(true);
 		setError('');
 		try {
-			// For simplicity, fetch all restaurants' orders may not exist; if specific restaurant is needed, adapt accordingly.
-			// Using a fallback endpoint is not provided; skip if backend requires restaurantId.
-			const res = await api.get('/orders/restaurant/1');
+			const res = await api.get(`/orders/restaurant/${restaurantId}`);
 			setOrders(res.data || []);
 		} catch (e) {
 			setError(e?.message || 'Failed to load orders');
@@ -27,13 +36,14 @@ const AdminOrders = () => {
 		}
 	};
 
-	useEffect(() => { fetchOrders(); }, []);
+	useEffect(() => { (async () => { try { setLoading(true); await fetchRestaurants(); } catch (e) { setError(e?.message || 'Failed to load restaurants'); } finally { setLoading(false); } })(); }, []);
+	useEffect(() => { if (selectedRestaurant) fetchOrders(selectedRestaurant); }, [selectedRestaurant]);
 
 	const updateStatus = async (id, status) => {
 		try {
 			await api.put(`/orders/${id}/status`, null, { params: { status } });
 			showToast('Status updated', 'success');
-			await fetchOrders();
+			await fetchOrders(selectedRestaurant);
 		} catch (e) {
 			showToast(e?.message || 'Failed to update status', 'error');
 		}
@@ -42,7 +52,7 @@ const AdminOrders = () => {
 		try {
 			await api.put(`/orders/${id}/payment-status`, null, { params: { paymentStatus } });
 			showToast('Payment status updated', 'success');
-			await fetchOrders();
+			await fetchOrders(selectedRestaurant);
 		} catch (e) {
 			showToast(e?.message || 'Failed to update payment status', 'error');
 		}
@@ -50,7 +60,15 @@ const AdminOrders = () => {
 
 	return (
 		<Container sx={{ py: 4 }}>
-			<Typography variant="h4" sx={{ fontWeight: 800, mb: 2 }}>Manage Orders</Typography>
+			<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+				<Typography variant="h4" sx={{ fontWeight: 800 }}>Manage Orders</Typography>
+				<FormControl size="small" sx={{ minWidth: 240 }}>
+					<InputLabel id="restaurant-label">Restaurant</InputLabel>
+					<Select labelId="restaurant-label" value={selectedRestaurant} label="Restaurant" onChange={(e) => setSelectedRestaurant(e.target.value)}>
+						{restaurants.map(r => <MenuItem key={r.id} value={r.id}>{r.name}</MenuItem>)}
+					</Select>
+				</FormControl>
+			</Box>
 			{error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 			{loading ? (
 				<Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>

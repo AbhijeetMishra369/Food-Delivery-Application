@@ -22,6 +22,7 @@ import AdminRestaurants from './pages/AdminRestaurants';
 import AdminCategories from './pages/AdminCategories';
 import AdminMenuItems from './pages/AdminMenuItems';
 import AdminOrders from './pages/AdminOrders';
+import FloatingCartCTA from './components/FloatingCartCTA';
 
 // Create theme (Swiggy-like palette & components)
 const theme = createTheme({
@@ -101,6 +102,7 @@ function App() {
                 <Route path="/admin/orders" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminOrders /></ProtectedRoute>} />
                 <Route path="/not-authorized" element={<NotAuthorized />} />
               </Routes>
+              <FloatingCartCTA />
             </div>
             <Footer />
           </Router>
