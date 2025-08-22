@@ -11,6 +11,7 @@
 /workspace/backend/src/main/java/com/fooddelivery/dto/RegisterRequest.java
 /workspace/backend/src/main/java/com/fooddelivery/controller/PaymentController.java
 /workspace/backend/src/main/java/com/fooddelivery/repository/MenuItemRepository.java
+/workspace/backend/src/main/java/com/fooddelivery/dto/CategoryRequest.java
 /workspace/backend/src/main/java/com/fooddelivery/repository/UserRepository.java
 /workspace/backend/src/main/java/com/fooddelivery/controller/MenuItemController.java
 /workspace/backend/src/main/java/com/fooddelivery/dto/ApiError.java
@@ -22,6 +23,7 @@
 /workspace/backend/src/main/java/com/fooddelivery/config/SecurityConfig.java
 /workspace/backend/src/main/java/com/fooddelivery/repository/PaymentRepository.java
 /workspace/backend/src/main/java/com/fooddelivery/service/RestaurantService.java
+/workspace/backend/src/main/java/com/fooddelivery/service/CategoryService.java
 /workspace/backend/src/main/java/com/fooddelivery/dto/OrderRequest.java
 /workspace/backend/src/main/java/com/fooddelivery/service/PaymentService.java
 /workspace/backend/src/main/java/com/fooddelivery/exception/NotFoundException.java

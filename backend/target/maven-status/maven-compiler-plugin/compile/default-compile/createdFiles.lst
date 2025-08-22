@@ -36,6 +36,7 @@ com/fooddelivery/repository/RestaurantRepository.class
 com/fooddelivery/controller/AuthController.class
 com/fooddelivery/dto/OrderRequest$OrderItemRequest.class
 com/fooddelivery/dto/MenuItemDto.class
+com/fooddelivery/dto/CategoryRequest.class
 com/fooddelivery/repository/MenuItemRepository.class
 com/fooddelivery/entity/Category.class
 com/fooddelivery/entity/OrderItem.class
@@ -49,6 +50,7 @@ com/fooddelivery/service/MenuItemService.class
 com/fooddelivery/dto/ApiError.class
 com/fooddelivery/repository/PaymentRepository.class
 com/fooddelivery/dto/OrderDto.class
+com/fooddelivery/service/CategoryService.class
 com/fooddelivery/entity/Payment.class
 com/fooddelivery/repository/UserRepository.class
 com/fooddelivery/repository/OrderRepository.class
