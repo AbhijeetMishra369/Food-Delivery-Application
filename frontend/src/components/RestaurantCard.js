@@ -8,7 +8,7 @@ const RestaurantCard = ({ restaurant }) => {
 		<Card sx={{ borderRadius: 2, overflow: 'hidden', transition: 'box-shadow .2s ease', '&:hover': { boxShadow: 3 } }}>
 			<CardActionArea component={Link} to={`/restaurant/${restaurant.id}`}>
 				<Box sx={{ position: 'relative' }}>
-					<CardMedia component="img" height="160" image={restaurant.imageUrl} alt={restaurant.name} />
+					<CardMedia component="img" height="160" image={restaurant.imageUrl || 'https://via.placeholder.com/600x400?text=Restaurant'} alt={restaurant.name} onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/600x400?text=Restaurant'; }} />
 					<Chip size="small" label={`${restaurant.rating} ★`} sx={{ position: 'absolute', right: 8, bottom: 8, bgcolor: 'background.paper' }} />
 				</Box>
 				<CardContent>
