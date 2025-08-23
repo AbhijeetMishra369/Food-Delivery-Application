@@ -66,7 +66,7 @@ const RestaurantDetail = () => {
 						restaurant && (
 							<Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
 								<Box sx={{ width: 72, height: 72, overflow: 'hidden', borderRadius: 2 }}>
-									<img src={restaurant.imageUrl} alt={restaurant.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+									<img src={restaurant.imageUrl || 'https://via.placeholder.com/128?text=Restaurant'} alt={restaurant.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/128?text=Restaurant'; }} />
 								</Box>
 								<Box>
 									<Typography variant="h4" sx={{ fontWeight: 800 }}>{restaurant.name}</Typography>
@@ -97,7 +97,7 @@ const RestaurantDetail = () => {
 								{items.map(item => (
 									<Grid item xs={12} sm={6} key={item.id}>
 										<Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-											<CardMedia component="img" height="140" image={item.imageUrl} alt={item.name} />
+											<CardMedia component="img" height="140" image={item.imageUrl || 'https://via.placeholder.com/400x300?text=Dish'} alt={item.name} onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/400x300?text=Dish'; }} />
 											<CardContent sx={{ flexGrow: 1 }}>
 												<Typography variant="h6" sx={{ fontWeight: 700 }}>{item.name}</Typography>
 												<Typography variant="body2" color="text.secondary" noWrap>{item.description}</Typography>
